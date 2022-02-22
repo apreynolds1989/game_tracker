@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>Working Title</title>
+    </head>
+
+    <body class="container">
+
+        <header>
+            <h1 id="main-title" >Weekly Games Played Tracker</h1>
+            <nav>
+                <!--Nav bar-->
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Teams</a></li>
+                    <li><a href="#">Schedule</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+
+            <article class="generic-article">
+                <p>Below is a table that will list NHL players and their stats drawn from an API and will be sortable based on the number of games each player has on the standard weekly fantasy hockey schedule. Will also list the off-day games (Monday/Wednesday/Friday/Sunday). Will likely need a second table to account for Goalies, their stats and their expected starts. Possibly be able to filter from one table to the other rather than have two tales.</p>
+            </article>
+
+            <br>
+
+            <table border="1" id="weekly-games" > 
+                <tr>
+                    <th>Player</th>
+                    <th>Weekly Games</th>
+                    <th>Number of Off-Day Games</th>
+                    <th>Games Played</th>
+                    <th>Goals</th>
+                    <th>Assists</th>
+                    <th>Points</th>
+                    <th>Powerplay Points</th>
+                    <th>Hits</th>
+                    <th>Blocks</th>
+                </tr>
+                <tr>
+                    <td>Player 1</td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td>55</td>
+                    <td>12</td>
+                    <td>32</td>
+                    <td>44</td>
+                    <td>13</td>
+                    <td>21</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>Player 2</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>53</td>
+                    <td>21</td>
+                    <td>44</td>
+                    <td>65</td>
+                    <td>11</td>
+                    <td>5</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Player 3</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>56</td>
+                    <td>14</td>
+                    <td>22</td>
+                    <td>36</td>
+                    <td>15</td>
+                    <td>22</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>Player 4</td>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>33</td>
+                    <td>13</td>
+                    <td>13</td>
+                    <td>26</td>
+                    <td>8</td>
+                    <td>44</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>Player 5</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>49</td>
+                    <td>16</td>
+                    <td>33</td>
+                    <td>49</td>
+                    <td>24</td>
+                    <td>35</td>
+                    <td>22</td>
+                </tr>
+                <tr>
+                    <td>Player 6</td>
+                    <td>2</td>
+                    <td>0</td>
+                    <td>51</td>
+                    <td>24</td>
+                    <td>25</td>
+                    <td>49</td>
+                    <td>20</td>
+                    <td>16</td>
+                    <td>9</td>
+                </tr>
+            </table>
+
+            <br>
+
+            <article  class="generic-article">
+                <p>Below is a table that will list NHL players and their stats drawn from an API and will be sortable based on the number of games each player has on the standard weekly fantasy hockey schedule. Will also list the off-day games (Monday/Wednesday/Friday/Sunday). Will likely need a second table to account for Goalies, their stats and their expected starts. Possibly be able to filter from one table to the other rather than have two tales.</p>
+            </article>
+
+            <aside>
+                <h2>Recommendations</h2>
+                <p>Maybe add this feature. Here I will list my top 5 recommended pick-ups for the week. Possibly based off a formula of weekly games and expected points/ultility stats.</p>
+
+                <table border="1" id="recommended-players">
+                </table>
+            </aside>
+
+        </main>
+
+          <footer>
+              <p>Copyright. Contact info here.</p>
+          </footer>
+
+
+
+          <script src="main.js"></script>
+    </body>
+</html>

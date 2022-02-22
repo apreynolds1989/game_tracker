@@ -1,3 +1,4 @@
+// Array for listing players in table
 recommended_players = [
     ["Andrew", "Reynolds"], //row 1
     ["Ruben", "Chevez"] //row 2

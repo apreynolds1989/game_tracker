@@ -1,36 +1,137 @@
-h1#mainTitle {
-    color: blue;
-}
-
-article.genericArticle {
-    background-color: yellow;
-}
-
 .container {
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
   }
-  @media (min-width: 768px) {
-    .container {
-      width: 750px;
-    }
+}
+@media (min-width: 992px) {
+  .container {
+    width: 970px;
   }
-  @media (min-width: 992px) {
-    .container {
-      width: 970px;
-    }
+}
+@media (min-width: 1200px) {
+  .container {
+    width: 1170px;
   }
-  @media (min-width: 1200px) {
-    .container {
-      width: 1170px;
-    }
+}
+
+body {
+  background-color:#f5f5f5;
+}
+
+/*QUESTION !!! How do I make links visible over Header text when resizing page*/
+h2#mainTitle {
+  display: inline;
+  padding: 14px 16px;
+  color: black;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.topNav {
+  box-sizing: inherit;
+  overflow: hidden;
+  background-color: purple;
+  height: 4em;
+  display: flex;
+  align-items: center;
+  border-width: 1px;
+	border-style: dashed;
+	border-color: transparent;
+	border-radius: 10px; /* pretend every corner is a circle and the radius refers to center of the circle to the egde */
+  box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+}
+
+.topNav a {
+  color: black;
+  text-align: end;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topNav a#index {
+  position: absolute;
+  top: 10px;
+  right: 220px;
+}
+
+.topNav a#schedule {
+  position: absolute;
+  top: 10px;
+  right: 110px;
+}
+
+.topNav a#about {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
+
+.topNav a:hover {
+  background-color: #f5f5f5;
+  color: black;
+  border-width: 1px;
+	border-style: solid;
+	border-color: black;
+	border-radius: 10px;
+  box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+}
+
+.topNav a:active {
+  background-color: #04AA6D;
+  color: white;
+}
+
+main {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+article.tableTitle {
+  box-sizing: inherit;
+  background-color: yellow;  /* Temporary to divide */
+  margin: auto;
+  text-align: center;
+  width: 60%;
   }
 
-  main {
-    margin-top: auto;
-    margin-bottom: auto;
-    padding-right: 15px;
-    padding-left: 15px;
+table {
+  box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+  margin-left: auto;
+  margin-right: auto;
+  background-color: black;
+  color: white;
+}
+
+aside.recommendations {
+  box-sizing: inherit;
+  background-color: yellow; /* Temporary to divide */
+  margin: auto;
+  text-align: center;
+  width: 60%;
   }
+
+  #footer {
+    box-sizing: inherit;
+    background-color: white;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    font-size: 75%;
+    color: black;
+    margin: auto;
+    width: 30%;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 10px;
+    box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+    clear: both;
+    }

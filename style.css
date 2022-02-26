@@ -21,22 +21,21 @@
 }
 
 body {
-  background-color:#f5f5f5;
+  background-color: #f8f8f8;
 }
 
 /*QUESTION !!! How do I make links visible over Header text when resizing page*/
 h2#mainTitle {
   display: inline;
   padding: 14px 16px;
-  color: black;
+  color: #21152b;
   margin-top: auto;
   margin-bottom: auto;
+  margin-left: 15px;
 }
 
 .topNav {
-  box-sizing: inherit;
-  overflow: hidden;
-  background-color: purple;
+  background-color: #562f7e;
   height: 4em;
   display: flex;
   align-items: center;
@@ -48,44 +47,44 @@ h2#mainTitle {
 }
 
 .topNav a {
-  color: black;
+  color: #21152b;
   text-align: end;
   padding: 14px 16px;
   text-decoration: none;
-  font-size: 17px;
+  font-size: 20px;
 }
 
 .topNav a#index {
   position: absolute;
-  top: 10px;
+  top: 13px;
   right: 220px;
 }
 
 .topNav a#schedule {
   position: absolute;
-  top: 10px;
+  top: 13px;
   right: 110px;
 }
 
 .topNav a#about {
   position: absolute;
-  top: 10px;
+  top: 13px;
   right: 20px;
 }
 
 .topNav a:hover {
-  background-color: #f5f5f5;
-  color: black;
+  background-color: #f8f8f8;
+  color: #21152b;
   border-width: 1px;
 	border-style: solid;
-	border-color: black;
+	border-color: #21152b;
 	border-radius: 10px;
   box-shadow: 10px 10px 15px rgba(0,0,0,.5);
 }
 
 .topNav a:active {
-  background-color: #04AA6D;
-  color: white;
+  background-color: gold;
+  color: #21152b;
 }
 
 main {
@@ -107,8 +106,13 @@ table {
   box-shadow: 10px 10px 15px rgba(0,0,0,.5);
   margin-left: auto;
   margin-right: auto;
-  background-color: black;
-  color: white;
+  background-color: #434343;
+  color: #fffff0;
+}
+
+td {
+  padding: 5px 10px 5px 10px;
+  text-align: center;
 }
 
 aside.recommendations {

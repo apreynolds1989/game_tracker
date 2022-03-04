@@ -1,0 +1,180 @@
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    width: 1170px;
+  }
+}
+
+body {
+  background-color: #f8f8f8;
+}
+
+/*QUESTION !!! How do I make links visible over Header text when resizing page*/
+h2#mainTitle {
+  /* display: inline; */
+  /* padding: 14px 16px; */
+  
+  /* padding-top: 3px; */
+  /*margin-bottom: auto;*/
+  /* padding-left: 15px; */
+}
+
+strong#titleText {
+  color: #21152b;
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+@media only screen and (max-width: 1026px) {
+  #titleText {
+      display: none;
+  }
+}
+
+img#titleIcon {
+  height: 30px;
+  margin-top: 5px;
+  margin-right: 10px;
+  margin-left: 20px;
+}
+
+.topNav {
+  background-color: #562f7e;
+  height: 4em;
+  display: flex;
+  align-items: center;
+  border-width: 1px;
+	border-style: dashed;
+	border-color: transparent;
+	border-radius: 10px; /* pretend every corner is a circle and the radius refers to center of the circle to the egde */
+  box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+}
+
+.topNav a {
+  color: #21152b;
+  text-align: end;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.topNav a#index {
+  position: absolute;
+  top: 13px;
+  right: 220px;
+}
+
+.topNav a#schedule {
+  position: absolute;
+  top: 13px;
+  right: 110px;
+}
+
+.topNav a#about {
+  position: absolute;
+  top: 13px;
+  right: 20px;
+}
+
+.topNav a:hover {
+  background-color: #f8f8f8;
+  color: #21152b;
+  border-width: 1px;
+	border-style: solid;
+	border-color: #21152b;
+	border-radius: 10px;
+  box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+}
+
+.topNav a:active {
+  background-color: gold;
+  color: #21152b;
+}
+
+main {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+article.tableTitle {
+  box-sizing: inherit;
+  background-color: yellow;  /* Temporary to divide */
+  margin: auto;
+  text-align: center;
+  width: 60%;
+  }
+
+table {
+  box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #434343;
+  color: #fffff0;
+  margin-bottom: 10px;
+}
+
+  @media only screen and (max-width: 1026px) {
+    #weeklyGames  {
+        display: none;
+    }
+    #weeklyGamesMobile  {
+      display: block;
+  }
+  }
+
+  @media only screen and (min-width: 1026px) {
+    #weeklyGamesMobile  {
+        display: block;
+    }
+    #weeklyGamesMobile  {
+      display: none;
+  }
+  }
+  
+
+td {
+  padding: 5px 10px 5px 10px;
+  text-align: center;
+}
+
+aside.recommendations {
+  box-sizing: inherit;
+  background-color: yellow; /* Temporary to divide */
+  margin: auto;
+  text-align: center;
+  width: 60%;
+  }
+
+  #footer {
+    box-sizing: inherit;
+    background-color: white;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    font-size: 75%;
+    color: black;
+    margin: auto;
+    width: 30%;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 10px;
+    box-shadow: 10px 10px 15px rgba(0,0,0,.5);
+    clear: both;
+    }

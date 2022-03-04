@@ -26,12 +26,31 @@ body {
 
 /*QUESTION !!! How do I make links visible over Header text when resizing page*/
 h2#mainTitle {
-  display: inline;
-  padding: 14px 16px;
+  /* display: inline; */
+  /* padding: 14px 16px; */
+  
+  /* padding-top: 3px; */
+  /*margin-bottom: auto;*/
+  /* padding-left: 15px; */
+}
+
+strong#titleText {
   color: #21152b;
-  margin-top: auto;
-  margin-bottom: auto;
-  margin-left: 15px;
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+@media only screen and (max-width: 1026px) {
+  #titleText {
+      display: none;
+  }
+}
+
+img#titleIcon {
+  height: 30px;
+  margin-top: 5px;
+  margin-right: 10px;
+  margin-left: 20px;
 }
 
 .topNav {
@@ -108,7 +127,27 @@ table {
   margin-right: auto;
   background-color: #434343;
   color: #fffff0;
+  margin-bottom: 10px;
 }
+
+  @media only screen and (max-width: 1026px) {
+    #weeklyGames  {
+        display: none;
+    }
+    #weeklyGamesMobile  {
+      display: block;
+  }
+  }
+
+  @media only screen and (min-width: 1026px) {
+    #weeklyGamesMobile  {
+        display: block;
+    }
+    #weeklyGamesMobile  {
+      display: none;
+  }
+  }
+  
 
 td {
   padding: 5px 10px 5px 10px;

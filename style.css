@@ -1,20 +1,53 @@
 html,
 body {
     height: 100%;
+    background-color: silver;
 }
 
-* {
+
+/* * {
     border: 2px solid red;
-}
+} */
 
 main {
     flex: 1 0 auto;
 }
 
+#navbarHeader {
+    background-color: #562f7e;
+    border-radius: 10px;
+    /* pretend every corner is a circle and the radius refers to center of the circle to the egde */
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
+    margin: 3px 3px 3px 3px;
+}
 
-/* Other Classes for Page Styling */
+.nav-link {
+    color: #21152b !important;
+}
 
+table {
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
+    margin-bottom: 10px;
+}
 
-/* .nav-link { # Custom text color on the navbar
-    color: grey !important;
-} */
+td {
+    text-align: center;
+}
+
+@media only screen and (max-width: 1026px) {
+    #weeklyGames {
+        display: none;
+    }
+    #weeklyGamesMobile {
+        display: block;
+    }
+}
+
+@media only screen and (min-width: 1026px) {
+    #weeklyGamesMobile {
+        display: block;
+    }
+    #weeklyGamesMobile {
+        display: none;
+    }
+}

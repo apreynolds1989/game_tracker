@@ -21,12 +21,12 @@
             <div class="container-fluid">
                 <a class="navbar-brand nav-link active" href="index.html">
                     <img src="img/title-icon.png" alt="" width="24" height="24" class="d-inline-block align-text-top">
-                    <strong>Weekly Games Tracker</strong>
+                    <strong class="text-warning">Weekly Games Tracker</strong>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                   </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!--                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="index.html">Home</a>
@@ -39,10 +39,36 @@
                             <a class="nav-link" id="about" href="about.html">About</a>
                         </li>
                     </ul>
+                </div> -->
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <a class="nav-link text-warning active" aria-current="page" href="index.html">Home</a>
+                        <a class="nav-link" href="schedule.html">Schedule</a>
+                        <a class="nav-link" href="about.html">About</a>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
+
+    <!--text-center aligns the text to the center, text-sm-start will align text to the start after small breakpoint (so anything bigger than a mobile screen)-->
+    <section class="bg-dark text-light p-5 text-center text-sm-start">
+        <div class="container">
+            <!--d-flex enables flexbox on the container, adding the sm creates a breakpoint so that on small screens, flexbox is not enabled-->
+            <div class="d-sm-flex align-items-center justify-content-between">
+                <div>
+                    <!--span here changes the text color-->
+                    <h1>Weekly adds made <span class="text-warning">Easy!</span></h1>
+                    <!--the class "lead" will make the text here a little bigger, my-4 gives vertical margin of 4-->
+                    <p class="lead my-4">
+                        No need to track games yourself, just get your information here!
+                    </p>
+                </div>
+                <!--img-fluid prevents img from breaking out of it's container, w-50 halves the size of the img. d-none will stop the display, but d-sm-block blocks that after the small breakpoint and will show on bigger screens-->
+                <img class="img-fluid w-25 d-none d-sm-block" src="img/gameDay.svg" alt="Cheering fans on a couch">
+            </div>
+        </div>
+    </section>
 
     <main class="container">
         <br>

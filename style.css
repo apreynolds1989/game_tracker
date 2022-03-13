@@ -14,15 +14,11 @@ main {
 }
 
 #navbarHeader {
-    background-color: #562f7e;
-    border-radius: 10px;
-    /* pretend every corner is a circle and the radius refers to center of the circle to the egde */
-    box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
-    margin: 3px 3px 3px 3px;
+    background-color: #00205B;
 }
 
 .nav-link {
-    color: #21152b !important;
+    color: #f0ad4e !important;
 }
 
 table {

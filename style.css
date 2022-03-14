@@ -9,7 +9,7 @@ body {
     border: 2px solid red;
 } */
 
-main {
+section {
     flex: 1 0 auto;
 }
 
@@ -21,29 +21,66 @@ main {
     color: #f0ad4e !important;
 }
 
+a.nav-link:hover {
+    background-color: silver;
+    color: black !important;
+    border-width: 1px;
+    border-style: transparent;
+    border-radius: 10px;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
+}
+
+.quickPoints {
+    color: #f0ad4e;
+}
+
+.qpBorder {
+    border-right: 5px solid #df4759;
+}
+
+.highlight {
+    background-color: #00205B;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-style: transparent;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, .5);
+}
+
+.recHeader {
+    color: #00205B;
+}
+
 table {
     box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
     margin-bottom: 10px;
+}
+
+th {
+    text-align: center;
+    color: #df4759;
 }
 
 td {
     text-align: center;
 }
 
-@media only screen and (max-width: 1026px) {
-    #weeklyGames {
-        display: none;
-    }
+@media only screen and (min-width: 992px) {
     #weeklyGamesMobile {
-        display: block;
+        display: none;
     }
 }
 
-@media only screen and (min-width: 1026px) {
-    #weeklyGamesMobile {
-        display: block;
-    }
-    #weeklyGamesMobile {
+@media only screen and (max-width: 992px) {
+    #weeklyGames {
         display: none;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .qpBorder {
+        border-right: 0px;
+        padding-top: 3px;
+        padding-bottom: 3px;
     }
 }

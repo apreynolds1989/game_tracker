@@ -1,4 +1,3 @@
-
 //Create Array for weekly games
 weeklyGames = [
     ["Player", "Weekly Games", "Off-Day Games", "Games Played", "Goals", "Assists", "Points", "Powerplay Points", "Hits", "Blocks"],
@@ -10,7 +9,7 @@ weeklyGames = [
     ["Player 6", 2, 0, 51, 24, 25, 49, 20, 16, 9]
 ];
 
-function populateWeeklyGamesTable(weeklyGames, tableId, isMobile){
+function populateWeeklyGamesTable(weeklyGames, tableId, isMobile) {
     //Reference the table
     const weeklyGamesTableBodyRef = document.getElementById(tableId);
 
@@ -18,22 +17,21 @@ function populateWeeklyGamesTable(weeklyGames, tableId, isMobile){
     for (let row_index = 0; row_index < weeklyGames.length; row_index++) {
         const weeklyGamesRowContent = weeklyGames[row_index];
         const weeklyGamesTempRow = document.createElement('tr'); //temporary row
-        
+
         for (let column_index = 0; column_index < weeklyGamesRowContent.length; column_index++) {
             const weeklyGamesCellContent = weeklyGamesRowContent[column_index];
 
-            if(isMobile == true && column_index > 6)
-            {
+            if (isMobile == true && column_index > 6) {
                 continue;
             }
-            const weeklyGamesTempCell = document.createElement('td'); 
+            const weeklyGamesTempCell = document.createElement('td');
             weeklyGamesTempCell.innerHTML = weeklyGamesCellContent;
             weeklyGamesTempRow.append(weeklyGamesTempCell);
-            
+
         }
         weeklyGamesTableBodyRef.append(weeklyGamesTempRow);
     }
-    
+
     // weeklyGames.forEach(weeklyGamesRowContent => {
     //     const weeklyGamesTempRow = document.createElement('tr'); //temporary row
     //     //Iterate trhough the cells
@@ -51,9 +49,8 @@ populateWeeklyGamesTable(weeklyGames, 'weeklyGamesMobile', true)
 
 // Array for listing players in table
 recommendedPlayers = [
-    ["Top 5 Recommended Players"], //row 1
-    ["Player 1"], //row 2
-    ["Player 2"],
+    ["Player 1"], //row 1
+    ["Player 2"], //row 2
     ["Player 3"],
     ["Player 4"],
     ["Player 5"],
@@ -64,12 +61,12 @@ const recommendedPlayersTableBodyRef = document.getElementById('recommendedPlaye
 
 //Iterate through the rows
 recommendedPlayers.forEach(recommendedPlayersRowContent => {
-const recommendedPlayersTempRow = document.createElement('tr'); //temporary row
-//Iterate trhough the cells
-recommendedPlayersRowContent.forEach(recommendedPlayersCellContent => {
-    const recommendedPlayersTempCell = document.createElement('td'); 
-    recommendedPlayersTempCell.innerHTML = recommendedPlayersCellContent;
-    recommendedPlayersTempRow.append(recommendedPlayersTempCell);
-});
-recommendedPlayersTableBodyRef.append(recommendedPlayersTempRow);
+    const recommendedPlayersTempRow = document.createElement('tr'); //temporary row
+    //Iterate trhough the cells
+    recommendedPlayersRowContent.forEach(recommendedPlayersCellContent => {
+        const recommendedPlayersTempCell = document.createElement('td');
+        recommendedPlayersTempCell.innerHTML = recommendedPlayersCellContent;
+        recommendedPlayersTempRow.append(recommendedPlayersTempCell);
+    });
+    recommendedPlayersTableBodyRef.append(recommendedPlayersTempRow);
 });

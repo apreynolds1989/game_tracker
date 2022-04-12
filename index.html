@@ -114,31 +114,41 @@
 
         <section class="pt-4">
             <div class="container">
-                <div class="row text-center">
-                    <div class="col-md">
-                        <img class="img-fluid d-none d-md-block" src="img/question.svg" alt="Person questioning themself">
+                <div class="d-flex justify-content-around">
+                    <div class=" d-none d-md-block">
+                        <img class="img-fluid" src="img/question.svg" alt="Person questioning themself">
                     </div>
-                    <div class="col-auto">
-                        <table class="table table-striped table-dark table-sm border-warning">
-                            <thead>
-                                <tr>
+                    <div class="">
+
+                        <div class="d-flex justify-content-center">
+                            <table class="table table-striped table-dark table-sm border-warning">
+                                <thead>
+
                                     <!--QUESTION!!! change this border bottom to yellow???-->
                                     <th scope="col">Top 5 Recommended Players</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recommendedPlayers">
-                            </tbody>
-                        </table>
+
+                                </thead>
+                                <tbody id="recommendedPlayers">
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <table id="teamsAPIexample"></table>
+                        <div id="player"></div>
+
                     </div>
+
 
                     <!-- QUESTION!!! How to make table center on small screen -->
 
-                    <div class="col-md">
+                    <div class="d-none d-md-block">
                         <!--EMPTY-->
                     </div>
                 </div>
             </div>
         </section>
+        <!-- To be added later -->
+        <!--        <table id="jquery-table"></table> -->
 
         <br>
         <br>
@@ -150,6 +160,7 @@
         </div>
     </footer>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 

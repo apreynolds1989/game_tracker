@@ -56,9 +56,14 @@ table {
     margin-bottom: 10px;
 }
 
-th {
+thead {
     text-align: center;
     color: #df4759;
+    border-color: yellow;
+}
+
+tr.heading {
+    border-bottom: 1px solid yellow;
 }
 
 td {

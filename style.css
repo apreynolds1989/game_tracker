@@ -1,13 +1,91 @@
 html,
 body {
-  height: 100%;
+    height: 100%;
+    background-color: silver;
 }
 
-main{
-  flex: 1 0 auto;
+
+/* * {
+    border: 2px solid red;
+} */
+
+section {
+    flex: 1 0 auto;
 }
 
-/* Other Classes for Page Styling */
+#navbarHeader {
+    background-color: #00205B;
+}
 
-body {
+.nav-link {
+    color: #f0ad4e !important;
+}
+
+a.nav-link:hover {
+    background-color: silver;
+    color: black !important;
+    border-width: 1px;
+    border-style: transparent;
+    border-radius: 10px;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
+}
+
+.quickPoints {
+    color: #f0ad4e;
+}
+
+.qpBorder {
+    border-right: 5px solid #df4759;
+}
+
+.highlight {
+    background-color: #00205B;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-style: transparent;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, .5);
+}
+
+.recHeader {
+    color: #00205B;
+}
+
+table {
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
+    margin-bottom: 10px;
+}
+
+thead {
+    text-align: center;
+    color: #df4759;
+    border-color: yellow;
+}
+
+tr.heading {
+    border-bottom: 1px solid yellow;
+}
+
+td {
+    text-align: center;
+}
+
+@media only screen and (min-width: 992px) {
+    #weeklyGamesMobile {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    #weeklyGames {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .qpBorder {
+        border-right: 0px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
 }

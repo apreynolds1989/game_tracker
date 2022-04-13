@@ -1,39 +1,78 @@
 <!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <link rel="stylesheet" href="style.css">
-        <title>Working Title</title>
-    </head>
 
-    <body>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <header>
-            <nav class="topNav">
-                <h2 id="mainTitle">Weekly Games Played Tracker</h3> 
-                <!--Nav bar-->
-                <a id="index" href="index.html">Home</a> 
-                <a id="schedule" href="schedule.html">Schedule</a> 
-                <a id="about" href="about.html">About</a>             
-            </nav>           
-        </header>
-        </header>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-        <main  class="container">
+    <link rel="stylesheet" href="style.css">
+    <title>NHL Weekly Games Tracker</title>
+</head>
 
-            <article class="genericArticle">
-                <p>NHL Schedule shown here.</p>
-            </article>
+<body>
+
+    <header>
+        <nav id="navbarHeader" class="navbar navbar-expand-lg navbar-dark justify-content-between px-2">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">
+                    <img src="img/players.svg" alt="Three Hockey Players" width="35" height="35" class="d-inline-block align-text-top">
+                    <strong class="text-warning">NHL Weekly Games Tracker</strong>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <a class="nav-link" aria-current="page" href="index.html">Home</a>
+                        <a class="nav-link active" href="schedule.html">Schedule</a>
+                        <a class="nav-link" href="about.html">About</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!--text-center aligns the text to the center, text-sm-start will align text to the start after small breakpoint (so anything bigger than a mobile screen)-->
+    <section class="bg-dark text-light p-5 text-center text-sm-start">
+        <div class="container">
+            <!--d-flex enables flexbox on the container, adding the sm creates a breakpoint so that on small screens, flexbox is not enabled-->
+            <div class="d-sm-flex align-items-center justify-content-around">
+                <div class="text-danger">
+                    <!--span here changes the text color-->
+                    <h1>NHL Schedule</h1>
+                    <!--the class "lead" will make the text here a little bigger, my-4 gives vertical margin of 4-->
+                    <p class="lead my-4 text-warning">
+                        week of [JS Monday-Sunday dates here]
+                    </p>
+                </div>
+                <!--img-fluid prevents img from breaking out of it's container, w-50 halves the size of the img. d-none will stop the display, but d-sm-block blocks that after the small breakpoint and will show on bigger screens-->
+                <img class="img-fluid w-25 d-none d-sm-block" src="img/calendar.svg" alt="Person looking at calendar">
+            </div>
+        </div>
+    </section>
+
+    <main class="container py-5">
+
+        <article class="genericArticle">
+            <p>NHL Schedule shown here.</p>
+        </article>
 
 
-        </main>
+    </main>
 
-          <footer id="footer">
-              <p>Copyright. Contact info here.</p>
-          </footer>
+    <footer id="sticky-footer" class="flex-shrink-0 py-4 bg-dark text-white-50">
+        <div class="container text-center">
+            <small>Copyright &copy; Weekly Games Tracker</small>
+        </div>
+    </footer>
 
 
+    <script src="main.js"></script>
+</body>
 
-          <script src="main.js"></script>
-    </body>
 </html>

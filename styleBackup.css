@@ -25,14 +25,13 @@ body {
 }
 
 /*QUESTION !!! How do I make links visible over Header text when resizing page*/
-h2#mainTitle {
-  /* display: inline; */
-  /* padding: 14px 16px; */
-  
-  /* padding-top: 3px; */
-  /*margin-bottom: auto;*/
-  /* padding-left: 15px; */
-}
+/* h2#mainTitle {
+  display: inline;
+  padding: 14px 16px;
+  padding-top: 3px;
+  margin-bottom: auto;
+  padding-left: 15px;
+} */
 
 strong#titleText {
   color: #21152b;

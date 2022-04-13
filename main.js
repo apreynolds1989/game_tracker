@@ -1,6 +1,7 @@
 let xhr = new XMLHttpRequest();
 let listOfTeams = [];
 let skatersArr = [];
+let skaterStatsArr = [];
 let goaliesArr = [];
 let num;
 
@@ -25,7 +26,12 @@ xhr.onload = function() {
             };
         }
     }
-    getSkaterStats(skatersArr);
+    getSkaterStats(skatersArr, skaterStatsArr);
+
+    //HOW TO MAKE DATA FROM API RETRIEVAL EXIST OUTSIDE ONLOAD FUNCTION
+    populateSkatersTable(skaterStatsArr, skatersTable, false);
+    populateSkatersTable(skaterStatsArr, skatersTableMobile, true);
+    console.log(skaterStatsArr);
 }
 
 xhr.send();
@@ -35,35 +41,54 @@ console.log(skatersArr);
 
 
 //Getting an individual player's stats
-function getSkaterStats(Arr) {
-    let output = [];
-
-    for (let i = 0; i < Arr.length; i++) {
+function getSkaterStats(ArrIn, ArrOut) {
+    for (let i = 0; i < ArrIn.length; i++) {
         let xhrFunc = new XMLHttpRequest();
-        num = Arr[i][0].Id;
+        num = ArrIn[i][0].Id;
 
         xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
 
         xhrFunc.onload = function() {
             let playerStats = JSON.parse(this.responseText);
-            playerStats = playerStats.stats
+            playerStats = playerStats.stats[0].splits;
 
-            //NEED TO DEAL WITH UNDEFINED 'stat' ERROR
+            if (playerStats.length > 0) {
+                let playerGoals = playerStats[0].stat.goals;
+                let playerAssists = playerStats[0].stat.assists;
+                let playerPoints = playerStats[0].stat.points;
 
-            let playerGoals = playerStats[0].splits[0].stat.goals;
-            let playerAssists = playerStats[0].splits[0].stat.assists;
-            let playerPoints = playerStats[0].splits[0].stat.points;
+                let results = [`${ArrIn[i][0].name}`, `Goals: ${playerGoals}`, `Assists: ${playerAssists}`, `Points: ${playerPoints}`]
 
-            output.push(`${Arr[i][0].name} has scored ${playerGoals} goals and ${playerAssists} assists for ${playerPoints} points on the year!`);
-
-            //Print to HTML if Needed?
-            //document.querySelector('#player').insertAdjacentHTML('beforeend', output);
-        }
-
+                ArrOut.push(results);
+            };
+        };
         xhrFunc.send();
     }
-    console.log(output);
 }
+
+function populateSkatersTable(Arr, tableId, isMobile) {
+    //Reference Table
+    const skatersTableBodyRef = document.getElementById(tableId);
+
+    //Iterate through the rows first
+    for (let row_index = 0; row_index < Arr.length; row_index++) {
+        const skatersTableRowContent = Arr[row_index];
+        const skatersTableTempRow = document.createElement('tr'); //temporary row
+
+        //Now iterate through columns
+        for (let col_index = 0; col_index < skatersTableRowContent.length; col_index++) {
+            const skatersTableCellContent = skatersTableRowContent[col_index];
+
+            if (isMobile == true && column_index > 6) {
+                continue;
+            };
+            const skatersTableTempCell = document.createElement('td'); //temporary cell
+            skatersTableTempCell.innerHTML = skatersTableCellContent;
+            skatersTableTempRow.append(skatersTableTempCell);
+        };
+        skatersTableBodyRef.append(skatersTableTempRow);
+    };
+};
 
 //Create Array for weekly games
 let weeklyGames = [
@@ -111,8 +136,8 @@ function populateWeeklyGamesTable(weeklyGames, tableId, isMobile) {
     // });
 }
 
-populateWeeklyGamesTable(weeklyGames, 'weeklyGames', false)
-populateWeeklyGamesTable(weeklyGames, 'weeklyGamesMobile', true)
+//populateWeeklyGamesTable(weeklyGames, 'weeklyGames', false)
+//populateWeeklyGamesTable(weeklyGames, 'weeklyGamesMobile', true)
 
 // Array for listing players in table
 recommendedPlayers = [

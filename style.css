@@ -71,13 +71,13 @@ td {
 }
 
 @media only screen and (min-width: 992px) {
-    #weeklyGamesMobile {
+    #skatersTableMobile {
         display: none;
     }
 }
 
 @media only screen and (max-width: 992px) {
-    #weeklyGames {
+    #skatersTable {
         display: none;
     }
 }

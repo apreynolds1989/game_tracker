@@ -1,17 +1,26 @@
-let xhr = new XMLHttpRequest();
-let listOfTeams = [];
-let skatersArr = [];
-let skaterStatsArr = [];
-let goaliesArr = [];
-let num;
+// Global  Variables
+var skatersArr = [];
+var paginationStart = 0;
+var paginationEnd = 5;
+var listOfTeams = [];
+var goaliesArr = [];
 
+let xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true);
 
+//responseType removes the need for .parse
+xhr.responseType = 'json';
+
+xhr.send();
+
 xhr.onload = function() {
-    teamsObj = JSON.parse(this.responseText);
+    if (xhr.status != 200) { // analyze HTTP status of the response
+        alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
+        return
+    }
+
+    let teamsObj = xhr.response;
     listOfTeams = teamsObj.teams;
-    console.log(teamsObj);
-    console.log(listOfTeams);
     for (let i = 0; i < listOfTeams.length; i++) {
         let teamRoster = listOfTeams[i].roster.roster;
         for (let j = 0; j < teamRoster.length; j++) {
@@ -26,30 +35,70 @@ xhr.onload = function() {
             };
         }
     }
-    getSkaterStats(skatersArr, skaterStatsArr);
 
+    //create pagination, using local pagination as the undocumented NHL API does not appear to have any
+    let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+    getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
+    getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
+    // let skaterStatsArr = getSkaterStats(skatersArr, "skatersTable");
+
+    // console.log("xhr.onload : ", teamsObj.teams, teamsObj.teams.length)
     //HOW TO MAKE DATA FROM API RETRIEVAL EXIST OUTSIDE ONLOAD FUNCTION
-    populateSkatersTable(skaterStatsArr, skatersTable, false);
-    populateSkatersTable(skaterStatsArr, skatersTableMobile, true);
-    console.log(skaterStatsArr);
+    // populateSkatersTable(skaterStatsArr, "skatersTable", false);
+    // populateSkatersTable(skaterStatsArr, "skatersTableMobile", true);
+    // console.log(skaterStatsArr);
 }
 
-xhr.send();
+function emptyTable(tableId) {
+    const skatersTableBodyRef = document.getElementById(tableId);
+    skatersTableBodyRef.innerHTML = "";
+}
 
-console.log(goaliesArr);
-console.log(skatersArr);
+const previousBtn = document.getElementById('paginationPrevious');
+previousBtn.addEventListener("click", function() {
+    paginationStart -= 5;
+    paginationEnd -= 5;
 
+    emptyTable("skatersTableData")
+    emptyTable("skatersTableDataMobile")
+
+    let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+    getSkaterStats(paginatedSkatersArr, "skatersTableData");
+    getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+});
+
+
+const nextBtn = document.getElementById('paginationNext');
+nextBtn.addEventListener("click", function() {
+    paginationStart += 5;
+    paginationEnd += 5;
+
+    emptyTable("skatersTableData")
+    emptyTable("skatersTableDataMobile")
+
+    let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+    getSkaterStats(paginatedSkatersArr, "skatersTableData");
+    getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+});
 
 //Getting an individual player's stats
-function getSkaterStats(ArrIn, ArrOut) {
+function getSkaterStats(ArrIn, tableId, isMobile) {
     for (let i = 0; i < ArrIn.length; i++) {
         let xhrFunc = new XMLHttpRequest();
-        num = ArrIn[i][0].Id;
+        let num = ArrIn[i][0].Id;
 
         xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
 
+        xhrFunc.responseType = 'json';
+
+        xhrFunc.send();
+
         xhrFunc.onload = function() {
-            let playerStats = JSON.parse(this.responseText);
+            if (xhrFunc.status != 200) { // analyze HTTP status of the response
+                alert(`Error ${xhrFunc.status}: ${xhrFunc.statusText}`); // e.g. 404: Not Found
+                return
+            }
+            let playerStats = xhrFunc.response;
             playerStats = playerStats.stats[0].splits;
 
             if (playerStats.length > 0) {
@@ -59,17 +108,33 @@ function getSkaterStats(ArrIn, ArrOut) {
 
                 let results = [`${ArrIn[i][0].name}`, `Goals: ${playerGoals}`, `Assists: ${playerAssists}`, `Points: ${playerPoints}`]
 
-                ArrOut.push(results);
+                renderSingleRow(results, tableId, isMobile)
             };
         };
-        xhrFunc.send();
     }
 }
 
-function populateSkatersTable(Arr, tableId, isMobile) {
+//Function to render a single row and append it to the referenced table. Allows logic to remain async
+function renderSingleRow(skatersTableRowContent, tableId, ) {
+    const skatersTableBodyRef = document.getElementById(tableId);
+    const skatersTableTempRow = document.createElement('tr');
+
+    for (let col_index = 0; col_index < skatersTableRowContent.length; col_index++) {
+        const skatersTableCellContent = skatersTableRowContent[col_index];
+        const skatersTableTempCell = document.createElement('td');
+        skatersTableTempCell.innerHTML = skatersTableCellContent;
+        // if (isMobile == true) { // && col_index > 6
+        //     continue;
+        // };
+        skatersTableTempRow.append(skatersTableTempCell);
+    };
+    skatersTableBodyRef.append(skatersTableTempRow);
+}
+
+/* function populateSkatersTable(Arr, tableId) {
     //Reference Table
     const skatersTableBodyRef = document.getElementById(tableId);
-
+    console.log("populateSkatersTable: ", Arr, Arr.length, skatersTableBodyRef);
     //Iterate through the rows first
     for (let row_index = 0; row_index < Arr.length; row_index++) {
         const skatersTableRowContent = Arr[row_index];
@@ -79,65 +144,17 @@ function populateSkatersTable(Arr, tableId, isMobile) {
         for (let col_index = 0; col_index < skatersTableRowContent.length; col_index++) {
             const skatersTableCellContent = skatersTableRowContent[col_index];
 
-            if (isMobile == true && column_index > 6) {
-                continue;
-            };
+            //if (isMobile == true && column_index > 6) {
+            //    continue;
+            //};
             const skatersTableTempCell = document.createElement('td'); //temporary cell
             skatersTableTempCell.innerHTML = skatersTableCellContent;
             skatersTableTempRow.append(skatersTableTempCell);
         };
         skatersTableBodyRef.append(skatersTableTempRow);
     };
-};
+}; */
 
-//Create Array for weekly games
-let weeklyGames = [
-    ["Player", "Weekly Games", "Off-Day Games", "Games Played", "Goals", "Assists", "Points", "Powerplay Points", "Hits", "Blocks"],
-    ["Player 1", 4, 2, 55, 12, 32, 44, 13, 21, 7],
-    ["Player 2", 3, 2, 53, 21, 44, 65, 11, 5, 5],
-    ["Player 3", 3, 2, 56, 14, 22, 36, 15, 22, 15],
-    ["Player 4", 3, 1, 33, 13, 13, 26, 8, 44, 15],
-    ["Player 5", 2, 1, 49, 16, 33, 49, 24, 35, 22],
-    ["Player 6", 2, 0, 51, 24, 25, 49, 20, 16, 9]
-];
-
-function populateWeeklyGamesTable(weeklyGames, tableId, isMobile) {
-    //Reference the table
-    const weeklyGamesTableBodyRef = document.getElementById(tableId);
-
-    //Iterate through the rows
-    for (let row_index = 0; row_index < weeklyGames.length; row_index++) {
-        const weeklyGamesRowContent = weeklyGames[row_index];
-        const weeklyGamesTempRow = document.createElement('tr'); //temporary row
-
-        for (let column_index = 0; column_index < weeklyGamesRowContent.length; column_index++) {
-            const weeklyGamesCellContent = weeklyGamesRowContent[column_index];
-
-            if (isMobile == true && column_index > 6) {
-                continue;
-            }
-            const weeklyGamesTempCell = document.createElement('td');
-            weeklyGamesTempCell.innerHTML = weeklyGamesCellContent;
-            weeklyGamesTempRow.append(weeklyGamesTempCell);
-
-        }
-        weeklyGamesTableBodyRef.append(weeklyGamesTempRow);
-    }
-
-    // weeklyGames.forEach(weeklyGamesRowContent => {
-    //     const weeklyGamesTempRow = document.createElement('tr'); //temporary row
-    //     //Iterate trhough the cells
-    //     weeklyGamesRowContent.forEach(weeklyGamesCellContent => {
-    //         const weeklyGamesTempCell = document.createElement('td'); 
-    //         weeklyGamesTempCell.innerHTML = weeklyGamesCellContent;
-    //         weeklyGamesTempRow.append(weeklyGamesTempCell);
-    //     });
-    //     weeklyGamesTableBodyRef.append(weeklyGamesTempRow);
-    // });
-}
-
-//populateWeeklyGamesTable(weeklyGames, 'weeklyGames', false)
-//populateWeeklyGamesTable(weeklyGames, 'weeklyGamesMobile', true)
 
 // Array for listing players in table
 recommendedPlayers = [

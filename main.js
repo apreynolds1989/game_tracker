@@ -102,7 +102,9 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
                 let playerAssists = playerStats[0].stat.assists;
                 let playerPoints = playerStats[0].stat.points;
 
-                let results = [`${ArrIn[i][0].name}`, `Goals: ${playerGoals}`, `Assists: ${playerAssists}`, `Points: ${playerPoints}`]
+                //Generate the array to be appended to the table in the following order:
+                // 'Name' - 'Goals' - 'Assists' - 'Points'
+                let results = [ArrIn[i][0].name, playerGoals, playerAssists, playerPoints]
 
                 renderSingleRow(results, tableId, isMobile)
             };

@@ -1,7 +1,7 @@
 // Global  Variables
 var skatersArr = [];
 var paginationStart = 0;
-var paginationEnd = 5;
+var paginationEnd = 20;
 var listOfTeams = [];
 var goaliesArr = [];
 
@@ -40,24 +40,20 @@ xhr.onload = function() {
     let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
     getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
     getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
-    // let skaterStatsArr = getSkaterStats(skatersArr, "skatersTable");
-
-    // console.log("xhr.onload : ", teamsObj.teams, teamsObj.teams.length)
-    //HOW TO MAKE DATA FROM API RETRIEVAL EXIST OUTSIDE ONLOAD FUNCTION
-    // populateSkatersTable(skaterStatsArr, "skatersTable", false);
-    // populateSkatersTable(skaterStatsArr, "skatersTableMobile", true);
-    // console.log(skaterStatsArr);
 }
 
+//Function to empty the table, to be called in pagination buttons allowing new table to be rendered
 function emptyTable(tableId) {
     const skatersTableBodyRef = document.getElementById(tableId);
     skatersTableBodyRef.innerHTML = "";
 }
 
+// When 'Previous' or 'Next' button is clicked, decrease/increase pagination variables, 
+//    empty the table and render new table
 const previousBtn = document.getElementById('paginationPrevious');
 previousBtn.addEventListener("click", function() {
-    paginationStart -= 5;
-    paginationEnd -= 5;
+    paginationStart -= 20;
+    paginationEnd -= 20;
 
     emptyTable("skatersTableData")
     emptyTable("skatersTableDataMobile")
@@ -70,8 +66,8 @@ previousBtn.addEventListener("click", function() {
 
 const nextBtn = document.getElementById('paginationNext');
 nextBtn.addEventListener("click", function() {
-    paginationStart += 5;
-    paginationEnd += 5;
+    paginationStart += 20;
+    paginationEnd += 20;
 
     emptyTable("skatersTableData")
     emptyTable("skatersTableDataMobile")
@@ -130,30 +126,6 @@ function renderSingleRow(skatersTableRowContent, tableId, ) {
     };
     skatersTableBodyRef.append(skatersTableTempRow);
 }
-
-/* function populateSkatersTable(Arr, tableId) {
-    //Reference Table
-    const skatersTableBodyRef = document.getElementById(tableId);
-    console.log("populateSkatersTable: ", Arr, Arr.length, skatersTableBodyRef);
-    //Iterate through the rows first
-    for (let row_index = 0; row_index < Arr.length; row_index++) {
-        const skatersTableRowContent = Arr[row_index];
-        const skatersTableTempRow = document.createElement('tr'); //temporary row
-
-        //Now iterate through columns
-        for (let col_index = 0; col_index < skatersTableRowContent.length; col_index++) {
-            const skatersTableCellContent = skatersTableRowContent[col_index];
-
-            //if (isMobile == true && column_index > 6) {
-            //    continue;
-            //};
-            const skatersTableTempCell = document.createElement('td'); //temporary cell
-            skatersTableTempCell.innerHTML = skatersTableCellContent;
-            skatersTableTempRow.append(skatersTableTempCell);
-        };
-        skatersTableBodyRef.append(skatersTableTempRow);
-    };
-}; */
 
 
 // Array for listing players in table

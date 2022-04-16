@@ -58,12 +58,11 @@ table {
 
 thead {
     text-align: center;
-    color: #df4759;
-    border-color: yellow;
 }
 
-tr.heading {
-    border-bottom: 1px solid yellow;
+thead.recHeader {
+    color: #df4759;
+    border-color: yellow;
 }
 
 td {

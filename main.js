@@ -106,13 +106,28 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
             playerStats = playerStats.stats[0].splits;
 
             if (playerStats.length > 0) {
+                let gamesPlayed = playerStats[0].stat.games;
                 let playerGoals = playerStats[0].stat.goals;
                 let playerAssists = playerStats[0].stat.assists;
                 let playerPoints = playerStats[0].stat.points;
+                let playerGameWinningGoals = playerStats[0].stat.gameWinningGoals;
+                let pointsPerGame = (playerPoints / gamesPlayed).toPrecision(2);
+                let playerTOIperGame = playerStats[0].stat.timeOnIcePerGame;
+                let playerPPGoals = playerStats[0].stat.powerPlayGoals;
+                let playerPPP = playerStats[0].stat.powerPlayPoints;
+                let playerPPTOIperGame = playerStats[0].stat.powerPlayTimeOnIcePerGame;
+                let playerShortHandedGoals = playerStats[0].stat.shortHandedGoals;
+                let playerShortHandedPoints = playerStats[0].stat.shortHandedPoints;
+                let playerSHTOIperGame = playerStats[0].stat.shortHandedTimeOnIcePerGame;
+                let playerHits = playerStats[0].stat.hits;
+                let playerBlocks = playerStats[0].stat.blocked;
+                let playerShots = playerStats[0].stat.shots;
+                let playerShootingPct = playerStats[0].stat.shotPct;
+                let playerfaceoffPct = playerStats[0].stat.faceOffPct;
+                let playerPim = playerStats[0].stat.pim;
 
-                //Generate the array to be appended to the table in the following order:
-                // 'Name' - 'Goals' - 'Assists' - 'Points'
-                let results = [ArrIn[i][0].name, playerGoals, playerAssists, playerPoints]
+                //Generate the array to be appended to the table
+                let results = [ArrIn[i][0].name, gamesPlayed, playerGoals, playerAssists, playerPoints, playerGameWinningGoals, pointsPerGame, playerTOIperGame, playerPPGoals, playerPPP, playerPPTOIperGame, playerShortHandedGoals, playerShortHandedPoints, playerSHTOIperGame, playerHits, playerBlocks, playerShots, playerShootingPct, playerfaceoffPct, playerPim];
 
                 renderSingleRow(results, tableId, isMobile)
             };
@@ -121,7 +136,7 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
 }
 
 //Function to render a single row and append it to the referenced table. Allows logic to remain async
-function renderSingleRow(skatersTableRowContent, tableId, ) {
+function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
     const skatersTableBodyRef = document.getElementById(tableId);
     const skatersTableTempRow = document.createElement('tr');
 

@@ -52,29 +52,37 @@ function emptyTable(tableId) {
 //    empty the table and render new table
 const previousBtn = document.getElementById('paginationPrevious');
 previousBtn.addEventListener("click", function() {
-    paginationStart -= 20;
-    paginationEnd -= 20;
+    if (paginationStart === 0) {
+        return;
+    } else {
+        paginationStart -= 20;
+        paginationEnd -= 20;
 
-    emptyTable("skatersTableData")
-    emptyTable("skatersTableDataMobile")
+        emptyTable("skatersTableData")
+        emptyTable("skatersTableDataMobile")
 
-    let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
-    getSkaterStats(paginatedSkatersArr, "skatersTableData");
-    getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+        let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+        getSkaterStats(paginatedSkatersArr, "skatersTableData");
+        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+    };
 });
 
 
 const nextBtn = document.getElementById('paginationNext');
 nextBtn.addEventListener("click", function() {
-    paginationStart += 20;
-    paginationEnd += 20;
+    if (paginationEnd >= skatersArr.length) {
+        return;
+    } else {
+        paginationStart += 20;
+        paginationEnd += 20;
 
-    emptyTable("skatersTableData")
-    emptyTable("skatersTableDataMobile")
+        emptyTable("skatersTableData")
+        emptyTable("skatersTableDataMobile")
 
-    let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
-    getSkaterStats(paginatedSkatersArr, "skatersTableData");
-    getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+        let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+        getSkaterStats(paginatedSkatersArr, "skatersTableData");
+        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+    };
 });
 
 //Getting an individual player's stats

@@ -22,15 +22,16 @@ xhr.onload = function() {
     let teamsObj = xhr.response;
     listOfTeams = teamsObj.teams;
     for (let i = 0; i < listOfTeams.length; i++) {
+        let teamAbrv = listOfTeams[i].abbreviation;
         let teamRoster = listOfTeams[i].roster.roster;
         for (let j = 0; j < teamRoster.length; j++) {
             let goalieNameAndId = [];
             let skaterNameAndId = [];
             if (teamRoster[j].position.code === 'G') {
-                goalieNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id });
+                goalieNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv });
                 goaliesArr.push(goalieNameAndId);
             } else {
-                skaterNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id });
+                skaterNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv });
                 skatersArr.push(skaterNameAndId);
             };
         }
@@ -127,7 +128,7 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
                 let playerPim = playerStats[0].stat.pim;
 
                 //Generate the array to be appended to the table
-                let results = [ArrIn[i][0].name, gamesPlayed, playerGoals, playerAssists, playerPoints, playerGameWinningGoals, pointsPerGame, playerTOIperGame, playerPPGoals, playerPPP, playerPPTOIperGame, playerShortHandedGoals, playerShortHandedPoints, playerSHTOIperGame, playerHits, playerBlocks, playerShots, playerShootingPct, playerfaceoffPct, playerPim];
+                let results = [ArrIn[i][0].name, ArrIn[i][0].team, gamesPlayed, playerGoals, playerAssists, playerPoints, playerGameWinningGoals, pointsPerGame, playerTOIperGame, playerPPGoals, playerPPP, playerPPTOIperGame, playerShortHandedGoals, playerShortHandedPoints, playerSHTOIperGame, playerHits, playerBlocks, playerShots, playerShootingPct, playerfaceoffPct, playerPim];
 
                 renderSingleRow(results, tableId, isMobile)
             };

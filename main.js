@@ -181,9 +181,9 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
         const skatersTableCellContent = skatersTableRowContent[col_index];
         const skatersTableTempCell = document.createElement('td');
         skatersTableTempCell.innerHTML = skatersTableCellContent;
-        // if (isMobile == true) { // && col_index > 6
-        //     continue;
-        // };
+        if (isMobile == true && col_index > 4) {
+            continue;
+        };
         skatersTableTempRow.append(skatersTableTempCell);
     };
     skatersTableBodyRef.append(skatersTableTempRow);
@@ -205,7 +205,7 @@ function generateWeeklyGames() {
             alert(`Error ${xhrFunc2.status}: ${xhrFunc2.statusText}`);
             return;
         };
-        let currentWeekGames = xhrFunc2.response
+        let currentWeekGames = xhrFunc2.response;
         let dates = currentWeekGames.dates;
         //Loop through the dates given and push all games to an array to be
         // used in generateWeeklyGamesTally()

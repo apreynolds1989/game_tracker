@@ -138,8 +138,32 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
                 let playerPim = playerStats[0].stat.pim;
 
                 //Generate the array to be appended to the table
-                // weekly games is generated through function
-                let results = [ArrIn[i][0].name, ArrIn[i][0].team, gamesPlayed, generateWeeklyGamesTally(weeklyGames, teamNum), playerGoals, playerAssists, playerPoints, playerGameWinningGoals, pointsPerGame, playerTOIperGame, playerPPGoals, playerPPP, playerPPTOIperGame, playerShortHandedGoals, playerShortHandedPoints, playerSHTOIperGame, playerHits, playerBlocks, playerShots, playerShootingPct, playerfaceoffPct, playerPim];
+                // weekly games and off day games are generated through function
+                let results = [
+                    ArrIn[i][0].name,
+                    ArrIn[i][0].team,
+                    gamesPlayed,
+                    generateWeeklyGamesTally(weeklyGames, teamNum),
+                    generateWeeklyOffDayGamesTally(weeklyGames, teamNum),
+                    playerGoals,
+                    playerAssists,
+                    playerPoints,
+                    playerGameWinningGoals,
+                    pointsPerGame,
+                    playerTOIperGame,
+                    playerPPGoals,
+                    playerPPP,
+                    playerPPTOIperGame,
+                    playerShortHandedGoals,
+                    playerShortHandedPoints,
+                    playerSHTOIperGame,
+                    playerHits,
+                    playerBlocks,
+                    playerShots,
+                    playerShootingPct,
+                    playerfaceoffPct,
+                    playerPim
+                ];
 
                 renderSingleRow(results, tableId, isMobile)
             };
@@ -208,6 +232,23 @@ function generateWeeklyGamesTally(Arr, variable) {
         };
     };
     return playerGamesTally;
+};
+
+function generateWeeklyOffDayGamesTally(Arr, variable) {
+    let playerOffDayGamesTally = 0;
+    for (i = 0; i < Arr.length; i++) {
+        let games = Arr[i];
+        if (i === 0 || i === 2 || i === 4 || i === 6) {
+            for (j = 0; j < games.length; j++) {
+                let awayTeam = games[j].teams.away.team.id;
+                let homeTeam = games[j].teams.home.team.id;
+                if (awayTeam === variable || homeTeam === variable) {
+                    playerOffDayGamesTally++;
+                };
+            };
+        };
+    };
+    return playerOffDayGamesTally;
 };
 
 

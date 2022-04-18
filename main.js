@@ -4,7 +4,9 @@ var paginationStart = 0;
 var paginationEnd = 20;
 var listOfTeams = [];
 var goaliesArr = [];
+var weeklyGames = [];
 
+// Call on all team rosters through NHL API
 let xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true);
 
@@ -19,24 +21,29 @@ xhr.onload = function() {
         return
     }
 
+    //Loop through each team
+    // Get each players name, id number, team abbreviation and team id number
+    //  Seperate Goalies and Skaters into two arrays
+    //   generate their weekly games and ge their stats
     let teamsObj = xhr.response;
     listOfTeams = teamsObj.teams;
     for (let i = 0; i < listOfTeams.length; i++) {
         let teamAbrv = listOfTeams[i].abbreviation;
         let teamRoster = listOfTeams[i].roster.roster;
+        let teamId = listOfTeams[i].id;
         for (let j = 0; j < teamRoster.length; j++) {
             let goalieNameAndId = [];
             let skaterNameAndId = [];
             if (teamRoster[j].position.code === 'G') {
-                goalieNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv });
+                goalieNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv, teamId: teamId });
                 goaliesArr.push(goalieNameAndId);
             } else {
-                skaterNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv });
+                skaterNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv, teamId: teamId });
                 skatersArr.push(skaterNameAndId);
             };
         }
     }
-
+    generateWeeklyGames();
     //create pagination, using local pagination as the undocumented NHL API does not appear to have any
     let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
     getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
@@ -86,11 +93,14 @@ nextBtn.addEventListener("click", function() {
     };
 });
 
-//Getting an individual player's stats
+//Getting an individual player's stats from the NHL API
+// Use paginatedSkatersArr generated earlier to loop through each players id
+//  each id is then appended to the API link to call on each player individually
 function getSkaterStats(ArrIn, tableId, isMobile) {
     for (let i = 0; i < ArrIn.length; i++) {
         let xhrFunc = new XMLHttpRequest();
         let num = ArrIn[i][0].Id;
+        let teamNum = ArrIn[i][0].teamId;
 
         xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
 
@@ -128,7 +138,8 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
                 let playerPim = playerStats[0].stat.pim;
 
                 //Generate the array to be appended to the table
-                let results = [ArrIn[i][0].name, ArrIn[i][0].team, gamesPlayed, playerGoals, playerAssists, playerPoints, playerGameWinningGoals, pointsPerGame, playerTOIperGame, playerPPGoals, playerPPP, playerPPTOIperGame, playerShortHandedGoals, playerShortHandedPoints, playerSHTOIperGame, playerHits, playerBlocks, playerShots, playerShootingPct, playerfaceoffPct, playerPim];
+                // weekly games is generated through function
+                let results = [ArrIn[i][0].name, ArrIn[i][0].team, gamesPlayed, generateWeeklyGamesTally(weeklyGames, teamNum), playerGoals, playerAssists, playerPoints, playerGameWinningGoals, pointsPerGame, playerTOIperGame, playerPPGoals, playerPPP, playerPPTOIperGame, playerShortHandedGoals, playerShortHandedPoints, playerSHTOIperGame, playerHits, playerBlocks, playerShots, playerShootingPct, playerfaceoffPct, playerPim];
 
                 renderSingleRow(results, tableId, isMobile)
             };
@@ -136,7 +147,8 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
     }
 }
 
-//Function to render a single row and append it to the referenced table. Allows logic to remain async
+//Function to render a single row and append it to the referenced table. 
+// Allows logic to remain async
 function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
     const skatersTableBodyRef = document.getElementById(tableId);
     const skatersTableTempRow = document.createElement('tr');
@@ -152,6 +164,51 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
     };
     skatersTableBodyRef.append(skatersTableTempRow);
 }
+
+//Generate the games for a given Week from NHL API
+// For now these dates are static
+function generateWeeklyGames() {
+    let xhrFunc2 = new XMLHttpRequest();
+
+    xhrFunc2.open('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=2022-04-18&endDate=2022-04-24', true);
+
+    xhrFunc2.responseType = 'json';
+
+    xhrFunc2.send();
+
+    xhrFunc2.onload = function() {
+        if (xhrFunc2.status != 200) {
+            alert(`Error ${xhrFunc2.status}: ${xhrFunc2.statusText}`);
+            return;
+        };
+        let currentWeekGames = xhrFunc2.response
+        let dates = currentWeekGames.dates;
+        //Loop through the dates given and push all games to an array to be
+        // used in generateWeeklyGamesTally()
+        for (i = 0; i < dates.length; i++) {
+            weeklyGames.push(dates[i].games);
+        };
+    };
+}
+
+//Take generated weekly games array, loop through games for each day
+// then loop through each player and determine if their team id (variable) is listed
+//  on either day, if it is, increment playerGamesTally
+//   playerGamesTally will be appended to the table for each player
+function generateWeeklyGamesTally(Arr, variable) {
+    let playerGamesTally = 0;
+    for (i = 0; i < Arr.length; i++) {
+        let games = Arr[i];
+        for (j = 0; j < games.length; j++) {
+            let awayTeam = games[j].teams.away.team.id;
+            let homeTeam = games[j].teams.home.team.id;
+            if (awayTeam === variable || homeTeam === variable) {
+                playerGamesTally++;
+            };
+        };
+    };
+    return playerGamesTally;
+};
 
 
 // Array for listing players in table
@@ -196,7 +253,7 @@ recommendedPlayers.forEach(recommendedPlayersRowContent => {
 // }); 
 
 /* 
-Ruben's Example 
+Ruben's Example  with JQuery
 
 var settings = {
     "url": "https://statsapi.web.nhl.com/api/v1/teams",

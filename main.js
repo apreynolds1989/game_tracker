@@ -88,8 +88,8 @@ nextBtn.addEventListener("click", function() {
         emptyTable("skatersTableDataMobile")
 
         let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
-        getSkaterStats(paginatedSkatersArr, "skatersTableData");
-        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+        getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
+        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
     };
 });
 

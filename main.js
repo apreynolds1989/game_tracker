@@ -2,6 +2,8 @@
 var skatersArr = [];
 var paginationStart = 0;
 var paginationEnd = 20;
+var paginationStartGoalie = 0;
+var paginationEndGoalie = 20;
 var listOfTeams = [];
 var goaliesArr = [];
 var weeklyGames = [];
@@ -46,8 +48,11 @@ xhr.onload = function() {
     generateWeeklyGames();
     //create pagination, using local pagination as the undocumented NHL API does not appear to have any
     let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+    let paginatedGoalieArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
     getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
     getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
+    getGoalieStats(paginatedGoalieArr, "goaliesTableData", false);
+    getGoalieStats(paginatedGoalieArr, "goaliesTableDataMobile", true);
 }
 
 //Function to empty the table, to be called in pagination buttons allowing new table to be rendered
@@ -69,7 +74,7 @@ previousBtn.addEventListener("click", function() {
         emptyTable("skatersTableData")
         emptyTable("skatersTableDataMobile")
 
-        let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+        paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
         getSkaterStats(paginatedSkatersArr, "skatersTableData");
         getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
     };
@@ -87,14 +92,49 @@ nextBtn.addEventListener("click", function() {
         emptyTable("skatersTableData")
         emptyTable("skatersTableDataMobile")
 
-        let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+        paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
         getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
         getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
     };
 });
 
+const previousBtnGoalies = document.getElementById('paginationPreviousGoalies');
+previousBtnGoalies.addEventListener("click", function() {
+    if (paginationStartGoalie === 0) {
+        return;
+    } else {
+        paginationStartGoalie -= 20;
+        paginationEndGoalie -= 20;
+
+        emptyTable("goaliesTableData")
+        emptyTable("goaliesTableDataMobile")
+
+        paginatedGoaliesArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
+    };
+});
+
+
+const nextBtnGoalies = document.getElementById('paginationNextGoalies');
+nextBtnGoalies.addEventListener("click", function() {
+    if (paginationEndGoalie >= goaliesArr.length) {
+        return;
+    } else {
+        paginationStartGoalie += 20;
+        paginationEndGoalie += 20;
+
+        emptyTable("goaliesTableData")
+        emptyTable("goaliesTableDataMobile")
+
+        paginatedGoaliesArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
+    };
+});
+
 //Getting an individual player's stats from the NHL API
-// Use paginatedSkatersArr generated earlier to loop through each players id
+// Use paginated Arrays generated earlier to loop through each players id
 //  each id is then appended to the API link to call on each player individually
 function getSkaterStats(ArrIn, tableId, isMobile) {
     for (let i = 0; i < ArrIn.length; i++) {
@@ -163,6 +203,63 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
                     playerShootingPct,
                     playerfaceoffPct,
                     playerPim
+                ];
+
+                renderSingleRow(results, tableId, isMobile)
+            };
+        };
+    }
+}
+
+function getGoalieStats(ArrIn, tableId, isMobile) {
+    for (let i = 0; i < ArrIn.length; i++) {
+        let xhrFunc = new XMLHttpRequest();
+        let num = ArrIn[i][0].Id;
+        let teamNum = ArrIn[i][0].teamId;
+
+        xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
+
+        xhrFunc.responseType = 'json';
+
+        xhrFunc.send();
+
+        xhrFunc.onload = function() {
+            if (xhrFunc.status != 200) { // analyze HTTP status of the response
+                alert(`Error ${xhrFunc.status}: ${xhrFunc.statusText}`); // e.g. 404: Not Found
+                return
+            }
+            let goalieStats = xhrFunc.response;
+            goalieStats = goalieStats.stats[0].splits;
+
+            if (goalieStats.length > 0) {
+                let gamesPlayed = goalieStats[0].stat.games;
+                let gamesStarted = goalieStats[0].stat.gamesStarted;
+                let goalieWins = goalieStats[0].stat.wins;
+                let goalieLosses = goalieStats[0].stat.losses;
+                let goalieShutouts = goalieStats[0].stat.shutouts;
+                let goalieShotsAgainst = goalieStats[0].stat.shotsAgainst
+                let goalieSaves = goalieStats[0].stat.saves;
+                let goalieSavePercentage = goalieStats[0].stat.savePercentage;
+                let goalieGoalsAgainst = goalieStats[0].stat.goalsAgainst;
+                let goalieGoalAgainstAverage = (goalieStats[0].stat.goalAgainstAverage).toPrecision(3);
+
+                //Generate the array to be appended to the table
+                // weekly games and off day games are generated through function
+                let results = [
+                    ArrIn[i][0].name,
+                    ArrIn[i][0].team,
+                    generateWeeklyGamesTally(weeklyGames, teamNum),
+                    generateWeeklyOffDayGamesTally(weeklyGames, teamNum),
+                    gamesPlayed,
+                    gamesStarted,
+                    goalieWins,
+                    goalieLosses,
+                    goalieShutouts,
+                    goalieShotsAgainst,
+                    goalieSaves,
+                    goalieSavePercentage,
+                    goalieGoalsAgainst,
+                    goalieGoalAgainstAverage
                 ];
 
                 renderSingleRow(results, tableId, isMobile)

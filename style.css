@@ -73,10 +73,16 @@ td {
     #skatersTableMobile {
         display: none;
     }
+    #goaliesTableMobile {
+        display: none;
+    }
 }
 
 @media only screen and (max-width: 992px) {
     #skatersTable {
+        display: none;
+    }
+    #goaliesTable {
         display: none;
     }
 }

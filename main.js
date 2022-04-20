@@ -8,6 +8,11 @@ var listOfTeams = [];
 var goaliesArr = [];
 var weeklyGames = [];
 
+// $(document).ready(function() {
+//     $('#skatersTable').DataTable();
+//     $('#skatersTableMobile').DataTable();
+// });
+
 // Call on all team rosters through NHL API
 let xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true);
@@ -211,6 +216,10 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
     }
 }
 
+function roundPrecision(number, n_decimals) {
+    return number != null ? number.toPrecision(n_decimals) : null
+}
+
 function getGoalieStats(ArrIn, tableId, isMobile) {
     for (let i = 0; i < ArrIn.length; i++) {
         let xhrFunc = new XMLHttpRequest();
@@ -239,9 +248,9 @@ function getGoalieStats(ArrIn, tableId, isMobile) {
                 let goalieShutouts = goalieStats[0].stat.shutouts;
                 let goalieShotsAgainst = goalieStats[0].stat.shotsAgainst
                 let goalieSaves = goalieStats[0].stat.saves;
-                let goalieSavePercentage = goalieStats[0].stat.savePercentage;
+                let goalieSavePercentage = roundPrecision(goalieStats[0].stat.savePercentage, 3);
                 let goalieGoalsAgainst = goalieStats[0].stat.goalsAgainst;
-                let goalieGoalAgainstAverage = (goalieStats[0].stat.goalAgainstAverage).toPrecision(3);
+                let goalieGoalAgainstAverage = roundPrecision((goalieStats[0].stat.goalAgainstAverage), 3);
 
                 //Generate the array to be appended to the table
                 // weekly games and off day games are generated through function
@@ -284,6 +293,8 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
         skatersTableTempRow.append(skatersTableTempCell);
     };
     skatersTableBodyRef.append(skatersTableTempRow);
+    $('#skatersTable').DataTable();
+    $('#skatersTableMobile').DataTable();
 }
 
 //Generate the games for a given Week from NHL API
@@ -291,7 +302,12 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
 function generateWeeklyGames() {
     let xhrFunc2 = new XMLHttpRequest();
 
-    xhrFunc2.open('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=2022-04-18&endDate=2022-04-24', true);
+    let startOfWeek = moment().startOf('week').add(1, 'days').format("YYYY-MM-DD");
+    let endOfWeek = moment().endOf('week').add(1, 'days').format("YYYY-MM-DD");
+    console.log('This is the start: ', startOfWeek);
+    console.log('This is the end: ', endOfWeek);
+
+    xhrFunc2.open('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + startOfWeek + '&endDate=' + endOfWeek, true);
 
     xhrFunc2.responseType = 'json';
 

@@ -8,11 +8,6 @@ var listOfTeams = [];
 var goaliesArr = [];
 var weeklyGames = [];
 
-// $(document).ready(function() {
-//     $('#skatersTable').DataTable();
-//     $('#skatersTableMobile').DataTable();
-// });
-
 // Call on all team rosters through NHL API
 let xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true);
@@ -80,8 +75,8 @@ previousBtn.addEventListener("click", function() {
         emptyTable("skatersTableDataMobile")
 
         paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
-        getSkaterStats(paginatedSkatersArr, "skatersTableData");
-        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile");
+        getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
+        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
     };
 });
 
@@ -141,11 +136,11 @@ nextBtnGoalies.addEventListener("click", function() {
 //Getting an individual player's stats from the NHL API
 // Use paginated Arrays generated earlier to loop through each players id
 //  each id is then appended to the API link to call on each player individually
-function getSkaterStats(ArrIn, tableId, isMobile) {
-    for (let i = 0; i < ArrIn.length; i++) {
+function getSkaterStats(Arr, tableId, isMobile) {
+    for (let i = 0; i < Arr.length; i++) {
         let xhrFunc = new XMLHttpRequest();
-        let num = ArrIn[i][0].Id;
-        let teamNum = ArrIn[i][0].teamId;
+        let num = Arr[i][0].Id;
+        let teamNum = Arr[i][0].teamId;
 
         xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
 
@@ -167,7 +162,7 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
                 let playerAssists = playerStats[0].stat.assists;
                 let playerPoints = playerStats[0].stat.points;
                 let playerGameWinningGoals = playerStats[0].stat.gameWinningGoals;
-                let pointsPerGame = (playerPoints / gamesPlayed).toPrecision(2);
+                let pointsPerGame = roundPrecision((playerPoints / gamesPlayed), 2);
                 let playerTOIperGame = playerStats[0].stat.timeOnIcePerGame;
                 let playerPPGoals = playerStats[0].stat.powerPlayGoals;
                 let playerPPP = playerStats[0].stat.powerPlayPoints;
@@ -185,8 +180,8 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
                 //Generate the array to be appended to the table
                 // weekly games and off day games are generated through function
                 let results = [
-                    ArrIn[i][0].name,
-                    ArrIn[i][0].team,
+                    Arr[i][0].name,
+                    Arr[i][0].team,
                     gamesPlayed,
                     generateWeeklyGamesTally(weeklyGames, teamNum),
                     generateWeeklyOffDayGamesTally(weeklyGames, teamNum),
@@ -216,15 +211,11 @@ function getSkaterStats(ArrIn, tableId, isMobile) {
     }
 }
 
-function roundPrecision(number, n_decimals) {
-    return number != null ? number.toPrecision(n_decimals) : null
-}
-
-function getGoalieStats(ArrIn, tableId, isMobile) {
-    for (let i = 0; i < ArrIn.length; i++) {
+function getGoalieStats(Arr, tableId, isMobile) {
+    for (let i = 0; i < Arr.length; i++) {
         let xhrFunc = new XMLHttpRequest();
-        let num = ArrIn[i][0].Id;
-        let teamNum = ArrIn[i][0].teamId;
+        let num = Arr[i][0].Id;
+        let teamNum = Arr[i][0].teamId;
 
         xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
 
@@ -255,8 +246,8 @@ function getGoalieStats(ArrIn, tableId, isMobile) {
                 //Generate the array to be appended to the table
                 // weekly games and off day games are generated through function
                 let results = [
-                    ArrIn[i][0].name,
-                    ArrIn[i][0].team,
+                    Arr[i][0].name,
+                    Arr[i][0].team,
                     generateWeeklyGamesTally(weeklyGames, teamNum),
                     generateWeeklyOffDayGamesTally(weeklyGames, teamNum),
                     gamesPlayed,
@@ -277,6 +268,12 @@ function getGoalieStats(ArrIn, tableId, isMobile) {
     }
 }
 
+//Run toPercision() on a category and account for undefined values
+// Make undefined values = 0
+function roundPrecision(number, n_integers) {
+    return number != null ? number.toPrecision(n_integers) : 0;
+}
+
 //Function to render a single row and append it to the referenced table. 
 // Allows logic to remain async
 function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
@@ -293,8 +290,6 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
         skatersTableTempRow.append(skatersTableTempCell);
     };
     skatersTableBodyRef.append(skatersTableTempRow);
-    $('#skatersTable').DataTable();
-    $('#skatersTableMobile').DataTable();
 }
 
 //Generate the games for a given Week from NHL API
@@ -363,7 +358,6 @@ function generateWeeklyOffDayGamesTally(Arr, variable) {
     };
     return playerOffDayGamesTally;
 };
-
 
 // Array for listing players in table
 recommendedPlayers = [

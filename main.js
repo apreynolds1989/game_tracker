@@ -8,6 +8,7 @@ var listOfTeams = [];
 var goaliesArr = [];
 var weeklyGames = [];
 
+//Repeatable Ajax function to avoid repitition
 function makeAjaxCall(methodType, url, isAsync, callback) {
     let xhr = new XMLHttpRequest();
     xhr.open(methodType, url, isAsync);
@@ -23,27 +24,16 @@ function makeAjaxCall(methodType, url, isAsync, callback) {
     }
 };
 
+makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true, generatePlayerArrays)
+
 // Call on all team rosters through NHL API
-let xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true);
-
-//responseType removes the need for .parse
-xhr.responseType = 'json';
-
-xhr.send();
-
-xhr.onload = function() {
-    if (xhr.status != 200) { // analyze HTTP status of the response
-        alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
-        return
-    }
-
-    //Loop through each team
-    // Get each players name, id number, team abbreviation and team id number
-    //  Seperate Goalies and Skaters into two arrays
-    //   generate their weekly games and ge their stats
-    let teamsObj = xhr.response;
+//Loop through each team
+// Get each players name, id number, team abbreviation and team id number
+//  Seperate Goalies and Skaters into two arrays
+//   generate their weekly games and ge their stats
+function generatePlayerArrays(teamsObj) {
     listOfTeams = teamsObj.teams;
+    generateWeeklyGames();
     for (let i = 0; i < listOfTeams.length; i++) {
         let teamAbrv = listOfTeams[i].abbreviation;
         let teamRoster = listOfTeams[i].roster.roster;
@@ -60,123 +50,23 @@ xhr.onload = function() {
             };
         }
     }
-    generateWeeklyGames();
-    //create pagination, using local pagination as the undocumented NHL API does not appear to have any
     let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
     let paginatedGoalieArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
     getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
     getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
     getGoalieStats(paginatedGoalieArr, "goaliesTableData", false);
     getGoalieStats(paginatedGoalieArr, "goaliesTableDataMobile", true);
-    generateDataTables();
+    //console.log(skatersArr);
 }
-
-//Function to empty the table, to be called in pagination buttons allowing new table to be rendered
-function emptyTable(tableId) {
-    const skatersTableBodyRef = document.getElementById(tableId);
-    skatersTableBodyRef.innerHTML = "";
-}
-
-function generateDataTables() {
-    let skaterDataTable = new JSTable("#skatersTable");
-    let skaterDataTableMobile = new JSTable("#skatersTableMobile");
-    let goaliesDataTable = new JSTable("#goaliesTable");
-    let goaliesDataTableMobile = new JSTable("#goaliesTableMobile");
-}
-
-/* // When 'Previous' or 'Next' button is clicked, decrease/increase pagination variables, 
-//    empty the table and render new table
-const previousBtn = document.getElementById('paginationPrevious');
-previousBtn.addEventListener("click", function() {
-    if (paginationStart === 0) {
-        return;
-    } else {
-        paginationStart -= 20;
-        paginationEnd -= 20;
-
-        emptyTable("skatersTableData")
-        emptyTable("skatersTableDataMobile")
-
-        paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
-        getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
-        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
-    };
-});
-
-
-const nextBtn = document.getElementById('paginationNext');
-nextBtn.addEventListener("click", function() {
-    if (paginationEnd >= skatersArr.length) {
-        return;
-    } else {
-        paginationStart += 20;
-        paginationEnd += 20;
-
-        emptyTable("skatersTableData")
-        emptyTable("skatersTableDataMobile")
-
-        paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
-        getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
-        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
-    };
-});
-
-const previousBtnGoalies = document.getElementById('paginationPreviousGoalies');
-previousBtnGoalies.addEventListener("click", function() {
-    if (paginationStartGoalie === 0) {
-        return;
-    } else {
-        paginationStartGoalie -= 20;
-        paginationEndGoalie -= 20;
-
-        emptyTable("goaliesTableData")
-        emptyTable("goaliesTableDataMobile")
-
-        paginatedGoaliesArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
-        getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
-        getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
-    };
-});
-
-
-const nextBtnGoalies = document.getElementById('paginationNextGoalies');
-nextBtnGoalies.addEventListener("click", function() {
-    if (paginationEndGoalie >= goaliesArr.length) {
-        return;
-    } else {
-        paginationStartGoalie += 20;
-        paginationEndGoalie += 20;
-
-        emptyTable("goaliesTableData")
-        emptyTable("goaliesTableDataMobile")
-
-        paginatedGoaliesArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
-        getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
-        getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
-    };
-}); */
 
 //Getting an individual player's stats from the NHL API
 // Use paginated Arrays generated earlier to loop through each players id
 //  each id is then appended to the API link to call on each player individually
 function getSkaterStats(Arr, tableId, isMobile) {
     for (let i = 0; i < Arr.length; i++) {
-        let xhrFunc = new XMLHttpRequest();
         let num = Arr[i][0].Id;
         let teamNum = Arr[i][0].teamId;
-
-        xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
-
-        xhrFunc.responseType = 'json';
-
-        xhrFunc.send();
-
-        xhrFunc.onload = function() {
-            if (xhrFunc.status != 200) { // analyze HTTP status of the response
-                alert(`Error ${xhrFunc.status}: ${xhrFunc.statusText}`); // e.g. 404: Not Found
-                return
-            }
-            let playerStats = xhrFunc.response;
+        makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true, (playerStats) => {
             playerStats = playerStats.stats[0].splits;
 
             if (playerStats.length > 0) {
@@ -229,30 +119,16 @@ function getSkaterStats(Arr, tableId, isMobile) {
                 ];
                 renderSingleRow(results, tableId, isMobile)
             };
-        };
+        })
     }
-}
+};
 
 function getGoalieStats(Arr, tableId, isMobile) {
     for (let i = 0; i < Arr.length; i++) {
-        let xhrFunc = new XMLHttpRequest();
         let num = Arr[i][0].Id;
         let teamNum = Arr[i][0].teamId;
-
-        xhrFunc.open('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true);
-
-        xhrFunc.responseType = 'json';
-
-        xhrFunc.send();
-
-        xhrFunc.onload = function() {
-            if (xhrFunc.status != 200) { // analyze HTTP status of the response
-                alert(`Error ${xhrFunc.status}: ${xhrFunc.statusText}`); // e.g. 404: Not Found
-                return
-            }
-            let goalieStats = xhrFunc.response;
+        makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/people/' + num + '/stats?stats=statsSingleSeason&season=20212022', true, (goalieStats) => {
             goalieStats = goalieStats.stats[0].splits;
-
             if (goalieStats.length > 0) {
                 let gamesPlayed = goalieStats[0].stat.games;
                 let gamesStarted = goalieStats[0].stat.gamesStarted;
@@ -286,33 +162,10 @@ function getGoalieStats(Arr, tableId, isMobile) {
 
                 renderSingleRow(results, tableId, isMobile)
             };
-        };
+        });
     }
-}
+};
 
-//Run toPercision() on a category and account for undefined values
-// Make undefined values = 0
-function roundPrecision(number, n_integers) {
-    return number != null ? number.toPrecision(n_integers) : 0;
-}
-
-//Function to render a single row and append it to the referenced table. 
-// Allows logic to remain async
-function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
-    const skatersTableBodyRef = document.getElementById(tableId);
-    const skatersTableTempRow = document.createElement('tr');
-
-    for (let col_index = 0; col_index < skatersTableRowContent.length; col_index++) {
-        const skatersTableCellContent = skatersTableRowContent[col_index];
-        const skatersTableTempCell = document.createElement('td');
-        skatersTableTempCell.innerHTML = skatersTableCellContent;
-        if (isMobile == true && col_index > 4) {
-            continue;
-        };
-        skatersTableTempRow.append(skatersTableTempCell);
-    };
-    skatersTableBodyRef.append(skatersTableTempRow);
-}
 
 //Generate the games for a given Week from NHL API
 // For now these dates are static
@@ -385,6 +238,116 @@ function generateWeeklyOffDayGamesTally(Arr, variable) {
     return playerOffDayGamesTally;
 };
 
+//Function to empty the table, to be called in pagination buttons allowing new table to be rendered
+function emptyTable(tableId) {
+    const skatersTableBodyRef = document.getElementById(tableId);
+    skatersTableBodyRef.innerHTML = "";
+}
+
+//Attempting to implement JSTables Library
+function generateDataTables() {
+    let skaterDataTable = new JSTable("#skatersTable");
+    let skaterDataTableMobile = new JSTable("#skatersTableMobile");
+    let goaliesDataTable = new JSTable("#goaliesTable");
+    let goaliesDataTableMobile = new JSTable("#goaliesTableMobile");
+}
+
+// When 'Previous' or 'Next' button is clicked, decrease/increase pagination variables, 
+//    empty the table and render new table
+const previousBtn = document.getElementById('paginationPrevious');
+previousBtn.addEventListener("click", function() {
+    if (paginationStart === 0) {
+        return;
+    } else {
+        paginationStart -= 20;
+        paginationEnd -= 20;
+
+        emptyTable("skatersTableData")
+        emptyTable("skatersTableDataMobile")
+
+        paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+        getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
+        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
+    };
+});
+
+
+const nextBtn = document.getElementById('paginationNext');
+nextBtn.addEventListener("click", function() {
+    if (paginationEnd >= skatersArr.length) {
+        return;
+    } else {
+        paginationStart += 20;
+        paginationEnd += 20;
+
+        emptyTable("skatersTableData")
+        emptyTable("skatersTableDataMobile")
+
+        paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
+        getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
+        getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
+    };
+});
+
+const previousBtnGoalies = document.getElementById('paginationPreviousGoalies');
+previousBtnGoalies.addEventListener("click", function() {
+    if (paginationStartGoalie === 0) {
+        return;
+    } else {
+        paginationStartGoalie -= 20;
+        paginationEndGoalie -= 20;
+
+        emptyTable("goaliesTableData")
+        emptyTable("goaliesTableDataMobile")
+
+        paginatedGoaliesArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
+    };
+});
+
+
+const nextBtnGoalies = document.getElementById('paginationNextGoalies');
+nextBtnGoalies.addEventListener("click", function() {
+    if (paginationEndGoalie >= goaliesArr.length) {
+        return;
+    } else {
+        paginationStartGoalie += 20;
+        paginationEndGoalie += 20;
+
+        emptyTable("goaliesTableData")
+        emptyTable("goaliesTableDataMobile")
+
+        paginatedGoaliesArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
+        getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
+    };
+});
+
+//Run toPercision() on a category and account for undefined values
+// Make undefined values = 0
+function roundPrecision(number, n_integers) {
+    return number != null ? number.toPrecision(n_integers) : 0;
+}
+
+//Function to render a single row and append it to the referenced table. 
+// Allows logic to remain async
+function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
+    const skatersTableBodyRef = document.getElementById(tableId);
+    const skatersTableTempRow = document.createElement('tr');
+
+    for (let col_index = 0; col_index < skatersTableRowContent.length; col_index++) {
+        const skatersTableCellContent = skatersTableRowContent[col_index];
+        const skatersTableTempCell = document.createElement('td');
+        skatersTableTempCell.innerHTML = skatersTableCellContent;
+        if (isMobile == true && col_index > 4) {
+            continue;
+        };
+        skatersTableTempRow.append(skatersTableTempCell);
+    };
+    skatersTableBodyRef.append(skatersTableTempRow);
+}
+
 // Array for listing players in table
 recommendedPlayers = [
     ["Player 1"], //row 1
@@ -408,38 +371,3 @@ recommendedPlayers.forEach(recommendedPlayersRowContent => {
     });
     recommendedPlayersTableBodyRef.append(recommendedPlayersTempRow);
 });
-
-/* JQuery table to be added later */
-
-// $.get("https://statsapi.web.nhl.com/api/v1/teams", function(data) {
-//     console.log(
-//         data["teams"]
-//     );
-//     var team_list = data["teams"]
-//     var trHTML = '';
-//     for (let index = 0; index < team_list.length; index++) {
-//         const single_team = team_list[index];
-//         console.log(single_team);
-//         trHTML += '<tr><td>' + single_team["name"] + '</td> <td>' + single_team["abbreviation"] + '</td> </tr>';
-//     }
-//     $('#jquery-table').html(trHTML);
-
-// }); 
-
-/* 
-Ruben's Example  with JQuery
-
-var settings = {
-    "url": "https://statsapi.web.nhl.com/api/v1/teams",
-    "method": "GET",
-    "timeout": 0,
-};
-$.ajax(settings).done(function(data) {
-    console.log("Teams: ", data.teams);
-    var team_list = data.teams.slice(0, 5)
-    console.log("Filling div: ");
-    // $('#teamsAPIexample').html(team_list[0].name);
-    team_list.forEach(team => {
-        $('#teamsAPIexample').append("<tr> <td>" + team.name + "</td><td><strong>" + team.abbreviation + "</strong> </td> </tr>")
-    });
-}); */

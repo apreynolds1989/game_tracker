@@ -8,6 +8,21 @@ var listOfTeams = [];
 var goaliesArr = [];
 var weeklyGames = [];
 
+function makeAjaxCall(methodType, url, isAsync, callback) {
+    let xhr = new XMLHttpRequest();
+    xhr.open(methodType, url, isAsync);
+    xhr.responseType = 'json';
+    xhr.send();
+    xhr.onload = function() {
+        if (xhr.status != 200) { // analyze HTTP status of the response
+            alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
+            return
+        }
+        let resp = xhr.response;
+        callback(resp);
+    }
+};
+
 // Call on all team rosters through NHL API
 let xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true);
@@ -53,6 +68,7 @@ xhr.onload = function() {
     getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
     getGoalieStats(paginatedGoalieArr, "goaliesTableData", false);
     getGoalieStats(paginatedGoalieArr, "goaliesTableDataMobile", true);
+    generateDataTables();
 }
 
 //Function to empty the table, to be called in pagination buttons allowing new table to be rendered
@@ -61,7 +77,14 @@ function emptyTable(tableId) {
     skatersTableBodyRef.innerHTML = "";
 }
 
-// When 'Previous' or 'Next' button is clicked, decrease/increase pagination variables, 
+function generateDataTables() {
+    let skaterDataTable = new JSTable("#skatersTable");
+    let skaterDataTableMobile = new JSTable("#skatersTableMobile");
+    let goaliesDataTable = new JSTable("#goaliesTable");
+    let goaliesDataTableMobile = new JSTable("#goaliesTableMobile");
+}
+
+/* // When 'Previous' or 'Next' button is clicked, decrease/increase pagination variables, 
 //    empty the table and render new table
 const previousBtn = document.getElementById('paginationPrevious');
 previousBtn.addEventListener("click", function() {
@@ -131,7 +154,7 @@ nextBtnGoalies.addEventListener("click", function() {
         getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
         getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
     };
-});
+}); */
 
 //Getting an individual player's stats from the NHL API
 // Use paginated Arrays generated earlier to loop through each players id
@@ -204,7 +227,6 @@ function getSkaterStats(Arr, tableId, isMobile) {
                     playerfaceoffPct,
                     playerPim
                 ];
-
                 renderSingleRow(results, tableId, isMobile)
             };
         };
@@ -298,11 +320,13 @@ function generateWeeklyGames() {
     let xhrFunc2 = new XMLHttpRequest();
 
     let startOfWeek = moment().startOf('week').add(1, 'days').format("YYYY-MM-DD");
-    let endOfWeek = moment().endOf('week').add(1, 'days').format("YYYY-MM-DD");
+    let currentDay = moment().format('YYYY-MM-DD');
+    console.log(currentDay);
+    let endOfWeek = moment().endOf('week').add(1, 'days').format('YYYY-MM-DD');
     console.log('This is the start: ', startOfWeek);
     console.log('This is the end: ', endOfWeek);
 
-    xhrFunc2.open('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + startOfWeek + '&endDate=' + endOfWeek, true);
+    xhrFunc2.open('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + currentDay + '&endDate=' + endOfWeek, true);
 
     xhrFunc2.responseType = 'json';
 
@@ -315,6 +339,7 @@ function generateWeeklyGames() {
         };
         let currentWeekGames = xhrFunc2.response;
         let dates = currentWeekGames.dates;
+        console.log(dates);
         //Loop through the dates given and push all games to an array to be
         // used in generateWeeklyGamesTally()
         for (i = 0; i < dates.length; i++) {
@@ -334,6 +359,7 @@ function generateWeeklyGamesTally(Arr, variable) {
         for (j = 0; j < games.length; j++) {
             let awayTeam = games[j].teams.away.team.id;
             let homeTeam = games[j].teams.home.team.id;
+            //console.log(`Looking for ${variable} - Away: ${awayTeam} Home: ${homeTeam}`);
             if (awayTeam === variable || homeTeam === variable) {
                 playerGamesTally++;
             };

@@ -33,7 +33,13 @@ makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roste
 //   generate their weekly games and ge their stats
 function generatePlayerArrays(teamsObj) {
     listOfTeams = teamsObj.teams;
-    generateWeeklyGames();
+    let startOfWeek = moment().startOf('week').add(1, 'days').format("YYYY-MM-DD");
+    let currentDay = moment().format('YYYY-MM-DD');
+    console.log(currentDay);
+    let endOfWeek = moment().endOf('week').add(1, 'days').format('YYYY-MM-DD');
+    console.log('This is the start: ', startOfWeek);
+    console.log('This is the end: ', endOfWeek);
+    makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + currentDay + '&endDate=' + endOfWeek, true, generateWeeklyGames);
     for (let i = 0; i < listOfTeams.length; i++) {
         let teamAbrv = listOfTeams[i].abbreviation;
         let teamRoster = listOfTeams[i].roster.roster;
@@ -166,40 +172,17 @@ function getGoalieStats(Arr, tableId, isMobile) {
     }
 };
 
-
 //Generate the games for a given Week from NHL API
 // For now these dates are static
-function generateWeeklyGames() {
-    let xhrFunc2 = new XMLHttpRequest();
-
-    let startOfWeek = moment().startOf('week').add(1, 'days').format("YYYY-MM-DD");
-    let currentDay = moment().format('YYYY-MM-DD');
-    console.log(currentDay);
-    let endOfWeek = moment().endOf('week').add(1, 'days').format('YYYY-MM-DD');
-    console.log('This is the start: ', startOfWeek);
-    console.log('This is the end: ', endOfWeek);
-
-    xhrFunc2.open('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + currentDay + '&endDate=' + endOfWeek, true);
-
-    xhrFunc2.responseType = 'json';
-
-    xhrFunc2.send();
-
-    xhrFunc2.onload = function() {
-        if (xhrFunc2.status != 200) {
-            alert(`Error ${xhrFunc2.status}: ${xhrFunc2.statusText}`);
-            return;
-        };
-        let currentWeekGames = xhrFunc2.response;
-        let dates = currentWeekGames.dates;
-        console.log(dates);
-        //Loop through the dates given and push all games to an array to be
-        // used in generateWeeklyGamesTally()
-        for (i = 0; i < dates.length; i++) {
-            weeklyGames.push(dates[i].games);
-        };
+function generateWeeklyGames(currentWeekGames) {
+    let dates = currentWeekGames.dates;
+    console.log(dates);
+    //Loop through the dates given and push all games to an array to be
+    // used in generateWeeklyGamesTally()
+    for (i = 0; i < dates.length; i++) {
+        weeklyGames.push(dates[i].games);
     };
-}
+};
 
 //Take generated weekly games array, loop through games for each day
 // then loop through each player and determine if their team id (variable) is listed

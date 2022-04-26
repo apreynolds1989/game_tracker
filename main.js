@@ -31,7 +31,7 @@ makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roste
 // Get each players name, id number, team abbreviation and team id number
 //  Seperate Goalies and Skaters into two arrays
 //   generate their weekly games and ge their stats
-function generatePlayerArrays(teamsObj) {
+async function generatePlayerArrays(teamsObj) {
     listOfTeams = teamsObj.teams;
     let startOfWeek = moment().startOf('week').add(1, 'days').format("YYYY-MM-DD");
     let currentDay = moment().format('YYYY-MM-DD');
@@ -39,7 +39,7 @@ function generatePlayerArrays(teamsObj) {
     let endOfWeek = moment().endOf('week').add(1, 'days').format('YYYY-MM-DD');
     console.log('This is the start: ', startOfWeek);
     console.log('This is the end: ', endOfWeek);
-    makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + currentDay + '&endDate=' + endOfWeek, true, generateWeeklyGames);
+    await makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + currentDay + '&endDate=' + endOfWeek, true, generateWeeklyGames);
     for (let i = 0; i < listOfTeams.length; i++) {
         let teamAbrv = listOfTeams[i].abbreviation;
         let teamRoster = listOfTeams[i].roster.roster;

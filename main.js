@@ -208,15 +208,27 @@ function generateWeeklyOffDayGamesTally(Arr, variable) {
     let playerOffDayGamesTally = 0;
     for (i = 0; i < Arr.length; i++) {
         let games = Arr[i];
-        if (i === 0 || i === 2 || i === 4 || i === 6) {
-            for (j = 0; j < games.length; j++) {
-                let awayTeam = games[j].teams.away.team.id;
-                let homeTeam = games[j].teams.home.team.id;
-                if (awayTeam === variable || homeTeam === variable) {
-                    playerOffDayGamesTally++;
+        if (Arr.length % 2) {
+            if (i === 1 || i === 3 || i === 5) {
+                for (j = 0; j < games.length; j++) {
+                    let awayTeam = games[j].teams.away.team.id;
+                    let homeTeam = games[j].teams.home.team.id;
+                    if (awayTeam === variable || homeTeam === variable) {
+                        playerOffDayGamesTally++;
+                    };
                 };
             };
-        };
+        } else {
+            if (i === 0 || i === 2 || i === 4 || i === 6) {
+                for (j = 0; j < games.length; j++) {
+                    let awayTeam = games[j].teams.away.team.id;
+                    let homeTeam = games[j].teams.home.team.id;
+                    if (awayTeam === variable || homeTeam === variable) {
+                        playerOffDayGamesTally++;
+                    };
+                };
+            };
+        }
     };
     return playerOffDayGamesTally;
 };

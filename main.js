@@ -31,13 +31,9 @@ main();
 async function main() {
     let weeklyGames = await getCurrentWeek();
     let skaterTableContent = await getSkaterStats(weeklyGames);
-    populateTable(skaterTableContent, "skatersTableData", false);
-    populateTable(skaterTableContent, "skatersTableDataMobile", true);
+    generateSkatersDataTables(skaterTableContent)
     let goalieTableContent = await getGoalieStats(weeklyGames);
-    populateTable(goalieTableContent, "goaliesTableData", false);
-    populateTable(goalieTableContent, "goaliesTableDataMobile", true);
-    console.log(skaterTableContent);
-    console.log(goalieTableContent);
+    generateGoaliesDataTables(goalieTableContent)
 }
 
 //Function to call NHL API and return a list of all NHL teams
@@ -219,55 +215,56 @@ async function getSkaterStats(gamesArr) {
             let results = [];
             if (playerStats.length > 0) {
                 let gamesPlayed = playerStats[0].stat.games;
-                let playerGoals = playerStats[0].stat.goals;
-                let playerAssists = playerStats[0].stat.assists;
-                let playerPoints = playerStats[0].stat.points;
-                let playerGameWinningGoals = playerStats[0].stat.gameWinningGoals;
-                let pointsPerGame = roundPrecision((playerPoints / gamesPlayed), 2);
-                let playerTOIperGame = playerStats[0].stat.timeOnIcePerGame;
-                let playerPPGoals = playerStats[0].stat.powerPlayGoals;
-                let playerPPP = playerStats[0].stat.powerPlayPoints;
-                let playerPPTOIperGame = playerStats[0].stat.powerPlayTimeOnIcePerGame;
-                let playerShortHandedGoals = playerStats[0].stat.shortHandedGoals;
-                let playerShortHandedPoints = playerStats[0].stat.shortHandedPoints;
-                let playerSHTOIperGame = playerStats[0].stat.shortHandedTimeOnIcePerGame;
-                let playerHits = playerStats[0].stat.hits;
-                let playerBlocks = playerStats[0].stat.blocked;
-                let playerShots = playerStats[0].stat.shots;
-                let playerShootingPct = playerStats[0].stat.shotPct;
-                let playerfaceoffPct = playerStats[0].stat.faceOffPct;
-                let playerPim = playerStats[0].stat.pim;
-                let weeklyGamestally = await generateWeeklyGamesTally(gamesArr, teamNum);
-                let weeklyOffDayGamesTally = await generateWeeklyOffDayGamesTally(gamesArr, teamNum);
-
-                //Generate the array to be appended to the table
-                // weekly games and off day games are generated through function
-                results.push(
-                    Arr[i][0].name,
-                    Arr[i][0].team,
-                    gamesPlayed,
-                    weeklyGamestally,
-                    weeklyOffDayGamesTally,
-                    playerGoals,
-                    playerAssists,
-                    playerPoints,
-                    playerGameWinningGoals,
-                    pointsPerGame,
-                    playerTOIperGame,
-                    playerPPGoals,
-                    playerPPP,
-                    playerPPTOIperGame,
-                    playerShortHandedGoals,
-                    playerShortHandedPoints,
-                    playerSHTOIperGame,
-                    playerHits,
-                    playerBlocks,
-                    playerShots,
-                    playerShootingPct,
-                    playerfaceoffPct,
-                    playerPim
-                );
-                skatersStatsArr.push(results);
+                if (gamesPlayed > 0) {
+                    let playerGoals = playerStats[0].stat.goals;
+                    let playerAssists = playerStats[0].stat.assists;
+                    let playerPoints = playerStats[0].stat.points;
+                    let playerGameWinningGoals = playerStats[0].stat.gameWinningGoals;
+                    let pointsPerGame = roundPrecision((playerPoints / gamesPlayed), 3);
+                    let playerTOIperGame = playerStats[0].stat.timeOnIcePerGame;
+                    let playerPPGoals = playerStats[0].stat.powerPlayGoals;
+                    let playerPPP = playerStats[0].stat.powerPlayPoints;
+                    let playerPPTOIperGame = playerStats[0].stat.powerPlayTimeOnIcePerGame;
+                    let playerShortHandedGoals = playerStats[0].stat.shortHandedGoals;
+                    let playerShortHandedPoints = playerStats[0].stat.shortHandedPoints;
+                    let playerSHTOIperGame = playerStats[0].stat.shortHandedTimeOnIcePerGame;
+                    let playerHits = playerStats[0].stat.hits;
+                    let playerBlocks = playerStats[0].stat.blocked;
+                    let playerShots = playerStats[0].stat.shots;
+                    let playerShootingPct = playerStats[0].stat.shotPct;
+                    let playerfaceoffPct = playerStats[0].stat.faceOffPct;
+                    let playerPim = playerStats[0].stat.pim;
+                    let weeklyGamesTally = await generateWeeklyGamesTally(gamesArr, teamNum);
+                    let weeklyOffDayGamesTally = await generateWeeklyOffDayGamesTally(gamesArr, teamNum);
+                    //Generate the array to be appended to the table
+                    // weekly games and off day games are generated through function
+                    results.push(
+                        Arr[i][0].name,
+                        Arr[i][0].team,
+                        gamesPlayed,
+                        weeklyGamesTally,
+                        weeklyOffDayGamesTally,
+                        playerGoals,
+                        playerAssists,
+                        playerPoints,
+                        playerGameWinningGoals,
+                        pointsPerGame,
+                        playerTOIperGame,
+                        playerPPGoals,
+                        playerPPP,
+                        playerPPTOIperGame,
+                        playerShortHandedGoals,
+                        playerShortHandedPoints,
+                        playerSHTOIperGame,
+                        playerHits,
+                        playerBlocks,
+                        playerShots,
+                        playerShootingPct,
+                        playerfaceoffPct,
+                        playerPim
+                    );
+                    skatersStatsArr.push(results);
+                }
             };
         } catch (error) {
             console.log(error);
@@ -495,20 +492,27 @@ function generateWeeklyOffDayGamesTally(Arr, variable) {
 }; */
 
 //Function to empty the table, to be called in pagination buttons allowing new table to be rendered
-function emptyTable(tableId) {
+/* function emptyTable(tableId) {
     const skatersTableBodyRef = document.getElementById(tableId);
     skatersTableBodyRef.innerHTML = "";
-}
+} */
 
 //Attempting to implement JSTables Library
-function generateDataTables() {
+function generateSkatersDataTables(Arr) {
+    populateTable(Arr, "skatersTableData", false);
+    populateTable(Arr, "skatersTableDataMobile", true);
     let skaterDataTable = new JSTable("#skatersTable");
     let skaterDataTableMobile = new JSTable("#skatersTableMobile");
+}
+
+function generateGoaliesDataTables(Arr) {
+    populateTable(Arr, "goaliesTableData", false);
+    populateTable(Arr, "goaliesTableDataMobile", true);
     let goaliesDataTable = new JSTable("#goaliesTable");
     let goaliesDataTableMobile = new JSTable("#goaliesTableMobile");
 }
 
-// When 'Previous' or 'Next' button is clicked, decrease/increase pagination variables, 
+/* // When 'Previous' or 'Next' button is clicked, decrease/increase pagination variables, 
 //    empty the table and render new table
 const previousBtn = document.getElementById('paginationPrevious');
 previousBtn.addEventListener("click", function() {
@@ -578,7 +582,7 @@ nextBtnGoalies.addEventListener("click", function() {
         getGoalieStats(paginatedGoaliesArr, "goaliesTableData", false);
         getGoalieStats(paginatedGoaliesArr, "goaliesTableDataMobile", true);
     };
-});
+}); */
 
 //Run toPercision() on a category and account for undefined values
 // Make undefined values = 0
@@ -586,7 +590,7 @@ function roundPrecision(number, n_integers) {
     return number != null ? number.toPrecision(n_integers) : 0;
 }
 
-//Function to render a single row and append it to the referenced table. 
+/* //Function to render a single row and append it to the referenced table. 
 // Allows logic to remain async
 function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
     const skatersTableBodyRef = document.getElementById(tableId);
@@ -602,7 +606,7 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
         skatersTableTempRow.append(skatersTableTempCell);
     };
     skatersTableBodyRef.append(skatersTableTempRow);
-}
+} */
 
 function populateTable(Arr, tableId, isMobile) {
     //Reference Table

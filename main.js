@@ -1,4 +1,4 @@
-// Global  Variables
+/* // Global  Variables
 var skatersArr = [];
 var paginationStart = 0;
 var paginationEnd = 20;
@@ -6,10 +6,10 @@ var paginationStartGoalie = 0;
 var paginationEndGoalie = 20;
 var listOfTeams = [];
 var goaliesArr = [];
-var weeklyGames = [];
+var weeklyGames = []; */
 
 //Repeatable Ajax function to avoid repitition
-function makeAjaxCall(methodType, url, isAsync, callback) {
+/* function makeAjaxCall(methodType, url, isAsync, callback) {
     let xhr = new XMLHttpRequest();
     xhr.open(methodType, url, isAsync);
     xhr.responseType = 'json';
@@ -22,23 +22,150 @@ function makeAjaxCall(methodType, url, isAsync, callback) {
         let resp = xhr.response;
         callback(resp);
     }
-};
+}; */
 
-makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true, generatePlayerArrays)
+/* makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true, generatePlayerArrays) */
 
-// Call on all team rosters through NHL API
-//Loop through each team
-// Get each players name, id number, team abbreviation and team id number
-//  Seperate Goalies and Skaters into two arrays
-//   generate their weekly games and ge their stats
-async function generatePlayerArrays(teamsObj) {
-    listOfTeams = teamsObj.teams;
+//Function to call NHL API and return a list of all NHL teams
+async function getTeams() {
+    let url = 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster';
+    try {
+        let res = await fetch(url);
+        res = await res.json();
+        return listOfTeams = res.teams
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//Function to get current week, from current day to Sunday
+async function getCurrentWeek() {
+    let weeklyGames = [];
     let startOfWeek = moment().startOf('week').add(1, 'days').format("YYYY-MM-DD");
     let currentDay = moment().format('YYYY-MM-DD');
     console.log(currentDay);
     let endOfWeek = moment().endOf('week').add(1, 'days').format('YYYY-MM-DD');
     console.log('This is the start: ', startOfWeek);
     console.log('This is the end: ', endOfWeek);
+    let url = `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${currentDay}&endDate=${endOfWeek}`;
+    try {
+        let res = await fetch(url);
+        let dates = await res.json();
+        dates = dates.dates;
+        //Loop through the dates given and push all games to an array to be
+        // used in generateWeeklyGamesTally()
+        for (i = 0; i < dates.length; i++) {
+            weeklyGames.push(dates[i].games);
+        };
+        return weeklyGames;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//Take generated weekly games array, loop through games for each day
+// then loop through each player and determine if their team id (variable) is listed
+//  on either day, if it is, increment playerGamesTally
+//   playerGamesTally will be appended to the table for each player
+async function generateWeeklyGamesTally(variable) {
+    let playerGamesTally = 0;
+    let Arr = await getCurrentWeek();
+    for (i = 0; i < Arr.length; i++) {
+        let games = Arr[i];
+        for (j = 0; j < games.length; j++) {
+            let awayTeam = games[j].teams.away.team.id;
+            let homeTeam = games[j].teams.home.team.id;
+            //console.log(`Looking for ${variable} - Away: ${awayTeam} Home: ${homeTeam}`);
+            if (awayTeam === variable || homeTeam === variable) {
+                playerGamesTally++;
+            };
+        };
+    };
+    return playerGamesTally;
+};
+
+async function generateWeeklyOffDayGamesTally(variable) {
+    let playerOffDayGamesTally = 0;
+    let Arr = await getCurrentWeek();
+    for (i = 0; i < Arr.length; i++) {
+        let games = Arr[i];
+        if (Arr.length % 2) {
+            if (i === 1 || i === 3 || i === 5) {
+                for (j = 0; j < games.length; j++) {
+                    let awayTeam = games[j].teams.away.team.id;
+                    let homeTeam = games[j].teams.home.team.id;
+                    if (awayTeam === variable || homeTeam === variable) {
+                        playerOffDayGamesTally++;
+                    };
+                };
+            };
+        } else {
+            if (i === 0 || i === 2 || i === 4 || i === 6) {
+                for (j = 0; j < games.length; j++) {
+                    let awayTeam = games[j].teams.away.team.id;
+                    let homeTeam = games[j].teams.home.team.id;
+                    if (awayTeam === variable || homeTeam === variable) {
+                        playerOffDayGamesTally++;
+                    };
+                };
+            };
+        }
+    };
+    return playerOffDayGamesTally;
+};
+
+// Call on all team rosters through NHL API
+//Loop through each team
+// Get each players name, id number, team abbreviation and team id number
+//  Seperate Goalies and Skaters into two arrays
+//   generate their weekly games and ge their stats
+async function generateSkaterArr() {
+    let skatersArr = [];
+    let listOfTeams = await getTeams();
+    for (let i = 0; i < listOfTeams.length; i++) {
+        let teamAbrv = listOfTeams[i].abbreviation;
+        let teamRoster = listOfTeams[i].roster.roster;
+        let teamId = listOfTeams[i].id;
+        for (let j = 0; j < teamRoster.length; j++) {
+            let skaterNameAndId = [];
+            if (teamRoster[j].position.code !== 'G') {
+                skaterNameAndId.push({
+                    name: teamRoster[j].person.fullName,
+                    Id: teamRoster[j].person.id,
+                    team: teamAbrv,
+                    teamId: teamId
+                });
+                skatersArr.push(skaterNameAndId);
+            };
+        }
+    }
+    return skatersArr;
+}
+async function generateGoaliesArr() {
+    let goaliesArr = [];
+    let listOfTeams = await getTeams();
+    for (let i = 0; i < listOfTeams.length; i++) {
+        let teamAbrv = listOfTeams[i].abbreviation;
+        let teamRoster = listOfTeams[i].roster.roster;
+        let teamId = listOfTeams[i].id;
+        for (let j = 0; j < teamRoster.length; j++) {
+            let goalieNameAndId = [];
+            if (teamRoster[j].position.code === 'G') {
+                goalieNameAndId.push({
+                    name: teamRoster[j].person.fullName,
+                    Id: teamRoster[j].person.id,
+                    team: teamAbrv,
+                    teamId: teamId
+                });
+                goaliesArr.push(goalieNameAndId);
+            };
+        }
+    }
+    return goaliesArr;
+}
+
+/* async function generatePlayerArrays(teamsObj) {
+
     await makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + currentDay + '&endDate=' + endOfWeek, true, generateWeeklyGames);
     for (let i = 0; i < listOfTeams.length; i++) {
         let teamAbrv = listOfTeams[i].abbreviation;
@@ -63,12 +190,132 @@ async function generatePlayerArrays(teamsObj) {
     getGoalieStats(paginatedGoalieArr, "goaliesTableData", false);
     getGoalieStats(paginatedGoalieArr, "goaliesTableDataMobile", true);
     //console.log(skatersArr);
-}
+} */
 
 //Getting an individual player's stats from the NHL API
 // Use paginated Arrays generated earlier to loop through each players id
 //  each id is then appended to the API link to call on each player individually
-function getSkaterStats(Arr, tableId, isMobile) {
+async function getSkaterStats() {
+    let skatersStatsArr = [];
+    let Arr = await generateSkaterArr();
+    for (let i = 0; i < Arr.length; i++) {
+        let num = Arr[i][0].Id;
+        let teamNum = Arr[i][0].teamId;
+        let url = `https://statsapi.web.nhl.com/api/v1/people/${num}/stats?stats=statsSingleSeason&season=20212022`;
+        try {
+            let res = await fetch(url);
+            res = await res.json();
+            let playerStats = res.stats[0].splits;
+            let results = [];
+            if (playerStats.length > 0) {
+                let gamesPlayed = playerStats[0].stat.games;
+                let playerGoals = playerStats[0].stat.goals;
+                let playerAssists = playerStats[0].stat.assists;
+                let playerPoints = playerStats[0].stat.points;
+                let playerGameWinningGoals = playerStats[0].stat.gameWinningGoals;
+                let pointsPerGame = roundPrecision((playerPoints / gamesPlayed), 2);
+                let playerTOIperGame = playerStats[0].stat.timeOnIcePerGame;
+                let playerPPGoals = playerStats[0].stat.powerPlayGoals;
+                let playerPPP = playerStats[0].stat.powerPlayPoints;
+                let playerPPTOIperGame = playerStats[0].stat.powerPlayTimeOnIcePerGame;
+                let playerShortHandedGoals = playerStats[0].stat.shortHandedGoals;
+                let playerShortHandedPoints = playerStats[0].stat.shortHandedPoints;
+                let playerSHTOIperGame = playerStats[0].stat.shortHandedTimeOnIcePerGame;
+                let playerHits = playerStats[0].stat.hits;
+                let playerBlocks = playerStats[0].stat.blocked;
+                let playerShots = playerStats[0].stat.shots;
+                let playerShootingPct = playerStats[0].stat.shotPct;
+                let playerfaceoffPct = playerStats[0].stat.faceOffPct;
+                let playerPim = playerStats[0].stat.pim;
+
+                //Generate the array to be appended to the table
+                // weekly games and off day games are generated through function
+                results.push(
+                    Arr[i][0].name,
+                    Arr[i][0].team,
+                    gamesPlayed,
+                    generateWeeklyGamesTally(teamNum),
+                    generateWeeklyOffDayGamesTally(teamNum),
+                    playerGoals,
+                    playerAssists,
+                    playerPoints,
+                    playerGameWinningGoals,
+                    pointsPerGame,
+                    playerTOIperGame,
+                    playerPPGoals,
+                    playerPPP,
+                    playerPPTOIperGame,
+                    playerShortHandedGoals,
+                    playerShortHandedPoints,
+                    playerSHTOIperGame,
+                    playerHits,
+                    playerBlocks,
+                    playerShots,
+                    playerShootingPct,
+                    playerfaceoffPct,
+                    playerPim
+                );
+                skatersStatsArr.push(results);
+            };
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    return skatersStatsArr;
+}
+
+async function getGoalieStats() {
+    let goalieStatsArr = [];
+    let Arr = await generateGoaliesArr();
+    for (let i = 0; i < Arr.length; i++) {
+        let num = Arr[i][0].Id;
+        let teamNum = Arr[i][0].teamId;
+        let url = `https://statsapi.web.nhl.com/api/v1/people/${num}/stats?stats=statsSingleSeason&season=20212022`;
+        try {
+            let res = await fetch(url);
+            res = await res.json();
+            let goalieStats = res.stats[0].splits;
+            let results = [];
+            if (goalieStats.length > 0) {
+                let gamesPlayed = goalieStats[0].stat.games;
+                let gamesStarted = goalieStats[0].stat.gamesStarted;
+                let goalieWins = goalieStats[0].stat.wins;
+                let goalieLosses = goalieStats[0].stat.losses;
+                let goalieShutouts = goalieStats[0].stat.shutouts;
+                let goalieShotsAgainst = goalieStats[0].stat.shotsAgainst
+                let goalieSaves = goalieStats[0].stat.saves;
+                let goalieSavePercentage = roundPrecision(goalieStats[0].stat.savePercentage, 3);
+                let goalieGoalsAgainst = goalieStats[0].stat.goalsAgainst;
+                let goalieGoalAgainstAverage = roundPrecision((goalieStats[0].stat.goalAgainstAverage), 3);
+
+                //Generate the array to be appended to the table
+                // weekly games and off day games are generated through function
+                results.push(
+                    Arr[i][0].name,
+                    Arr[i][0].team,
+                    generateWeeklyGamesTally(teamNum),
+                    generateWeeklyOffDayGamesTally(teamNum),
+                    gamesPlayed,
+                    gamesStarted,
+                    goalieWins,
+                    goalieLosses,
+                    goalieShutouts,
+                    goalieShotsAgainst,
+                    goalieSaves,
+                    goalieSavePercentage,
+                    goalieGoalsAgainst,
+                    goalieGoalAgainstAverage
+                );
+                goalieStatsArr.push(results);
+            };
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    return goalieStatsArr;
+};
+
+/* function getSkaterStats(Arr, tableId, isMobile) {
     for (let i = 0; i < Arr.length; i++) {
         let num = Arr[i][0].Id;
         let teamNum = Arr[i][0].teamId;
@@ -127,9 +374,9 @@ function getSkaterStats(Arr, tableId, isMobile) {
             };
         })
     }
-};
+}; */
 
-function getGoalieStats(Arr, tableId, isMobile) {
+/* function getGoalieStats(Arr, tableId, isMobile) {
     for (let i = 0; i < Arr.length; i++) {
         let num = Arr[i][0].Id;
         let teamNum = Arr[i][0].teamId;
@@ -170,11 +417,11 @@ function getGoalieStats(Arr, tableId, isMobile) {
             };
         });
     }
-};
+}; */
 
 //Generate the games for a given Week from NHL API
 // For now these dates are static
-function generateWeeklyGames(currentWeekGames) {
+/* function generateWeeklyGames(currentWeekGames) {
     let dates = currentWeekGames.dates;
     console.log(dates);
     //Loop through the dates given and push all games to an array to be
@@ -182,13 +429,13 @@ function generateWeeklyGames(currentWeekGames) {
     for (i = 0; i < dates.length; i++) {
         weeklyGames.push(dates[i].games);
     };
-};
+}; */
 
 //Take generated weekly games array, loop through games for each day
 // then loop through each player and determine if their team id (variable) is listed
 //  on either day, if it is, increment playerGamesTally
 //   playerGamesTally will be appended to the table for each player
-function generateWeeklyGamesTally(Arr, variable) {
+/* function generateWeeklyGamesTally(Arr, variable) {
     let playerGamesTally = 0;
     for (i = 0; i < Arr.length; i++) {
         let games = Arr[i];
@@ -231,7 +478,7 @@ function generateWeeklyOffDayGamesTally(Arr, variable) {
         }
     };
     return playerOffDayGamesTally;
-};
+}; */
 
 //Function to empty the table, to be called in pagination buttons allowing new table to be rendered
 function emptyTable(tableId) {

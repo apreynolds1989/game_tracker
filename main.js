@@ -26,6 +26,20 @@ var weeklyGames = []; */
 
 /* makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true, generatePlayerArrays) */
 
+main();
+
+async function main() {
+    let weeklyGames = await getCurrentWeek();
+    let skaterTableContent = await getSkaterStats(weeklyGames);
+    populateTable(skaterTableContent, "skatersTableData", false);
+    populateTable(skaterTableContent, "skatersTableDataMobile", true);
+    let goalieTableContent = await getGoalieStats(weeklyGames);
+    populateTable(goalieTableContent, "goaliesTableData", false);
+    populateTable(goalieTableContent, "goaliesTableDataMobile", true);
+    console.log(skaterTableContent);
+    console.log(goalieTableContent);
+}
+
 //Function to call NHL API and return a list of all NHL teams
 async function getTeams() {
     let url = 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster';
@@ -41,12 +55,10 @@ async function getTeams() {
 //Function to get current week, from current day to Sunday
 async function getCurrentWeek() {
     let weeklyGames = [];
-    let startOfWeek = moment().startOf('week').add(1, 'days').format("YYYY-MM-DD");
     let currentDay = moment().format('YYYY-MM-DD');
-    console.log(currentDay);
+    console.log('This is the current day: ', currentDay);
     let endOfWeek = moment().endOf('week').add(1, 'days').format('YYYY-MM-DD');
-    console.log('This is the start: ', startOfWeek);
-    console.log('This is the end: ', endOfWeek);
+    console.log('This is the end of the week: ', endOfWeek);
     let url = `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${currentDay}&endDate=${endOfWeek}`;
     try {
         let res = await fetch(url);
@@ -67,11 +79,10 @@ async function getCurrentWeek() {
 // then loop through each player and determine if their team id (variable) is listed
 //  on either day, if it is, increment playerGamesTally
 //   playerGamesTally will be appended to the table for each player
-async function generateWeeklyGamesTally(variable) {
+async function generateWeeklyGamesTally(gamesArr, variable) {
     let playerGamesTally = 0;
-    let Arr = await getCurrentWeek();
-    for (i = 0; i < Arr.length; i++) {
-        let games = Arr[i];
+    for (i = 0; i < gamesArr.length; i++) {
+        let games = gamesArr[i];
         for (j = 0; j < games.length; j++) {
             let awayTeam = games[j].teams.away.team.id;
             let homeTeam = games[j].teams.home.team.id;
@@ -84,12 +95,11 @@ async function generateWeeklyGamesTally(variable) {
     return playerGamesTally;
 };
 
-async function generateWeeklyOffDayGamesTally(variable) {
+async function generateWeeklyOffDayGamesTally(gamesArr, variable) {
     let playerOffDayGamesTally = 0;
-    let Arr = await getCurrentWeek();
-    for (i = 0; i < Arr.length; i++) {
-        let games = Arr[i];
-        if (Arr.length % 2) {
+    for (i = 0; i < gamesArr.length; i++) {
+        let games = gamesArr[i];
+        if (gamesArr.length % 2) {
             if (i === 1 || i === 3 || i === 5) {
                 for (j = 0; j < games.length; j++) {
                     let awayTeam = games[j].teams.away.team.id;
@@ -195,7 +205,7 @@ async function generateGoaliesArr() {
 //Getting an individual player's stats from the NHL API
 // Use paginated Arrays generated earlier to loop through each players id
 //  each id is then appended to the API link to call on each player individually
-async function getSkaterStats() {
+async function getSkaterStats(gamesArr) {
     let skatersStatsArr = [];
     let Arr = await generateSkaterArr();
     for (let i = 0; i < Arr.length; i++) {
@@ -227,6 +237,8 @@ async function getSkaterStats() {
                 let playerShootingPct = playerStats[0].stat.shotPct;
                 let playerfaceoffPct = playerStats[0].stat.faceOffPct;
                 let playerPim = playerStats[0].stat.pim;
+                let weeklyGamestally = await generateWeeklyGamesTally(gamesArr, teamNum);
+                let weeklyOffDayGamesTally = await generateWeeklyOffDayGamesTally(gamesArr, teamNum);
 
                 //Generate the array to be appended to the table
                 // weekly games and off day games are generated through function
@@ -234,8 +246,8 @@ async function getSkaterStats() {
                     Arr[i][0].name,
                     Arr[i][0].team,
                     gamesPlayed,
-                    generateWeeklyGamesTally(teamNum),
-                    generateWeeklyOffDayGamesTally(teamNum),
+                    weeklyGamestally,
+                    weeklyOffDayGamesTally,
                     playerGoals,
                     playerAssists,
                     playerPoints,
@@ -264,9 +276,9 @@ async function getSkaterStats() {
     return skatersStatsArr;
 }
 
-async function getGoalieStats() {
+async function getGoalieStats(gamesArr) {
     let goalieStatsArr = [];
-    let Arr = await generateGoaliesArr();
+    let Arr = await generateGoaliesArr(gamesArr);
     for (let i = 0; i < Arr.length; i++) {
         let num = Arr[i][0].Id;
         let teamNum = Arr[i][0].teamId;
@@ -287,14 +299,16 @@ async function getGoalieStats() {
                 let goalieSavePercentage = roundPrecision(goalieStats[0].stat.savePercentage, 3);
                 let goalieGoalsAgainst = goalieStats[0].stat.goalsAgainst;
                 let goalieGoalAgainstAverage = roundPrecision((goalieStats[0].stat.goalAgainstAverage), 3);
+                let weeklyGamestally = await generateWeeklyGamesTally(gamesArr, teamNum);
+                let weeklyOffDayGamesTally = await generateWeeklyOffDayGamesTally(gamesArr, teamNum);
 
                 //Generate the array to be appended to the table
                 // weekly games and off day games are generated through function
                 results.push(
                     Arr[i][0].name,
                     Arr[i][0].team,
-                    generateWeeklyGamesTally(teamNum),
-                    generateWeeklyOffDayGamesTally(teamNum),
+                    weeklyGamestally,
+                    weeklyOffDayGamesTally,
                     gamesPlayed,
                     gamesStarted,
                     goalieWins,
@@ -589,6 +603,31 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
     };
     skatersTableBodyRef.append(skatersTableTempRow);
 }
+
+function populateTable(Arr, tableId, isMobile) {
+    //Reference Table
+    const tableBodyRef = document.getElementById(tableId);
+
+    //Iterate through the rows first
+    for (let row_index = 0; row_index < Arr.length; row_index++) {
+        const tableRowContent = Arr[row_index];
+        const tableTempRow = document.createElement('tr'); //temporary row
+
+        //Now iterate through columns
+        for (let col_index = 0; col_index < tableRowContent.length; col_index++) {
+            const tableCellContent = tableRowContent[col_index];
+
+            if (isMobile == true && col_index > 4) {
+                continue;
+            };
+            const tableTempCell = document.createElement('td'); //temporary cell
+            tableTempCell.innerHTML = tableCellContent;
+            tableTempRow.append(tableTempCell);
+        };
+        tableBodyRef.append(tableTempRow);
+    };
+};
+
 
 // Array for listing players in table
 recommendedPlayers = [

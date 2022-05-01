@@ -1,31 +1,3 @@
-/* // Global  Variables
-var skatersArr = [];
-var paginationStart = 0;
-var paginationEnd = 20;
-var paginationStartGoalie = 0;
-var paginationEndGoalie = 20;
-var listOfTeams = [];
-var goaliesArr = [];
-var weeklyGames = []; */
-
-//Repeatable Ajax function to avoid repitition
-/* function makeAjaxCall(methodType, url, isAsync, callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open(methodType, url, isAsync);
-    xhr.responseType = 'json';
-    xhr.send();
-    xhr.onload = function() {
-        if (xhr.status != 200) { // analyze HTTP status of the response
-            alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
-            return
-        }
-        let resp = xhr.response;
-        callback(resp);
-    }
-}; */
-
-/* makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/teams?expand=team.roster', true, generatePlayerArrays) */
-
 main();
 
 async function main() {
@@ -33,13 +5,21 @@ async function main() {
     // Show spinner
 
     let weeklyGames = await getCurrentWeek();
-    let skaterTableContent = await getSkaterStats(weeklyGames);
-    generateSkatersDataTables(skaterTableContent)
-    let goalieTableContent = await getGoalieStats(weeklyGames);
-    generateGoaliesDataTables(goalieTableContent)
+    generateSkaterTable(weeklyGames);
+    generateGoalieTable(weeklyGames);
 
     // Hide spinner
 }
+
+async function generateSkaterTable(arr) {
+    let skaterTableContent = await getSkaterStats(arr);
+    generateSkatersDataTables(skaterTableContent);
+};
+
+async function generateGoalieTable(arr) {
+    let goalieTableContent = await getGoalieStats(arr);
+    generateGoaliesDataTables(goalieTableContent);
+};
 
 //Function to call NHL API and return a list of all NHL teams
 async function getTeams() {
@@ -56,23 +36,42 @@ async function getTeams() {
 //Function to get current week, from current day to Sunday
 async function getCurrentWeek() {
     let weeklyGames = [];
+    let dayOfWeek = moment().format('dddd');
     let currentDay = moment().format('YYYY-MM-DD');
-    console.log('This is the current day: ', currentDay);
     let endOfWeek = moment().endOf('week').add(1, 'days').format('YYYY-MM-DD');
+    console.log(dayOfWeek);
+    console.log('This is the current day: ', currentDay);
     console.log('This is the end of the week: ', endOfWeek);
-    let url = `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${currentDay}&endDate=${endOfWeek}`;
-    try {
-        let res = await fetch(url);
-        let dates = await res.json();
-        dates = dates.dates;
-        //Loop through the dates given and push all games to an array to be
-        // used in generateWeeklyGamesTally()
-        for (i = 0; i < dates.length; i++) {
-            weeklyGames.push(dates[i].games);
-        };
-        return weeklyGames;
-    } catch (error) {
-        console.log(error);
+    if (dayOfWeek === 'Sunday') {
+        let url = `https://statsapi.web.nhl.com/api/v1/schedule?date=${currentDay}`;
+        try {
+            let res = await fetch(url);
+            let dates = await res.json();
+            dates = dates.dates;
+            //Loop through the dates given and push all games to an array to be
+            // used in generateWeeklyGamesTally()
+            for (i = 0; i < dates.length; i++) {
+                weeklyGames.push(dates[i].games);
+            };
+            return weeklyGames;
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        let url = `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${currentDay}&endDate=${endOfWeek}`;
+        try {
+            let res = await fetch(url);
+            let dates = await res.json();
+            dates = dates.dates;
+            //Loop through the dates given and push all games to an array to be
+            // used in generateWeeklyGamesTally()
+            for (i = 0; i < dates.length; i++) {
+                weeklyGames.push(dates[i].games);
+            };
+            return weeklyGames;
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
@@ -174,34 +173,6 @@ async function generateGoaliesArr() {
     }
     return goaliesArr;
 }
-
-/* async function generatePlayerArrays(teamsObj) {
-
-    await makeAjaxCall('GET', 'https://statsapi.web.nhl.com/api/v1/schedule?startDate=' + currentDay + '&endDate=' + endOfWeek, true, generateWeeklyGames);
-    for (let i = 0; i < listOfTeams.length; i++) {
-        let teamAbrv = listOfTeams[i].abbreviation;
-        let teamRoster = listOfTeams[i].roster.roster;
-        let teamId = listOfTeams[i].id;
-        for (let j = 0; j < teamRoster.length; j++) {
-            let goalieNameAndId = [];
-            let skaterNameAndId = [];
-            if (teamRoster[j].position.code === 'G') {
-                goalieNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv, teamId: teamId });
-                goaliesArr.push(goalieNameAndId);
-            } else {
-                skaterNameAndId.push({ name: teamRoster[j].person.fullName, Id: teamRoster[j].person.id, team: teamAbrv, teamId: teamId });
-                skatersArr.push(skaterNameAndId);
-            };
-        }
-    }
-    let paginatedSkatersArr = skatersArr.slice(paginationStart, paginationEnd);
-    let paginatedGoalieArr = goaliesArr.slice(paginationStartGoalie, paginationEndGoalie);
-    getSkaterStats(paginatedSkatersArr, "skatersTableData", false);
-    getSkaterStats(paginatedSkatersArr, "skatersTableDataMobile", true);
-    getGoalieStats(paginatedGoalieArr, "goaliesTableData", false);
-    getGoalieStats(paginatedGoalieArr, "goaliesTableDataMobile", true);
-    //console.log(skatersArr);
-} */
 
 //Getting an individual player's stats from the NHL API
 // Loop through each players stats using their ID generate from earlier API call

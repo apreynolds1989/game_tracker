@@ -204,28 +204,35 @@ async function generateGoaliesArr() {
 } */
 
 //Getting an individual player's stats from the NHL API
-// Use paginated Arrays generated earlier to loop through each players id
-//  each id is then appended to the API link to call on each player individually
+// Loop through each players stats using their ID generate from earlier API call
+//  Use Promise.all to call each players API in parallel
+//   return an object with required information 
 async function getSkaterStats(gamesArr) {
     let skatersStatsArr = [];
     let Arr = await generateSkaterArr();
-    print("Appending Player Promises")
-    playerInfoPromises = Arr.map((player) => {
+    const playerInfoPromises = await Promise.all(Arr.map(async(player) => {
         let num = player[0].Id;
+        let thisPlayerName = player[0].name;
+        let thisPlayerTeam = player[0].team;
+        let thisPlayerTeamID = player[0].teamId;
         let url = `https://statsapi.web.nhl.com/api/v1/people/${num}/stats?stats=statsSingleSeason&season=20212022`;
-        return fetch(url);
-    })
-    playerInfoResponses = await Promise.all(playerInfoPromises)
-    playerJSONPromises = playerInfoResponses.map((playerResponse) => {
-        return playerResponse.json();
-    })
-    playerInfoJSON = await Promise.all(playerJSONPromises)
-    console.log("Getting PlayerInfos: ", playerInfoJSON)
+        let thisPlayerStats = await fetch(url);
+        let thisPlayerStatsJSON = await thisPlayerStats.json();
+        return {
+            stats: thisPlayerStatsJSON,
+            name: thisPlayerName,
+            team: thisPlayerTeam,
+            teamId: thisPlayerTeamID
+        };
+    }))
 
-    skatersStatsArr = playerInfoJSON.reduce((playerArray, singlePlayerJSON, playerIndex) => {
-        console.log(playerArray, singlePlayerJSON, playerIndex);
+    // Call the promise all to fetch all player Stats in parallel
+    // Use .reduce to error catach any players that don't fit have the requried stats 
+    const playerInfoResponses = await Promise.all(playerInfoPromises)
+    skatersStatsArr = playerInfoResponses.reduce((playerArray, singlePlayerJSON, playerIndex) => {
+        //console.log(singlePlayerJSON);
         let teamNum = singlePlayerJSON.teamId;
-        let playerStats = singlePlayerJSON.stats[0].splits;
+        let playerStats = singlePlayerJSON.stats.stats[0].splits;
         let results = [];
         if (playerStats.length > 0) {
             let gamesPlayed = playerStats[0].stat.games;
@@ -253,8 +260,8 @@ async function getSkaterStats(gamesArr) {
                 //Generate the array to be appended to the table
                 // weekly games and off day games are generated through function
                 results.push(
-                    Arr[i][0].name,
-                    Arr[i][0].team,
+                    singlePlayerJSON.name,
+                    singlePlayerJSON.team,
                     gamesPlayed,
                     weeklyGamesTally,
                     weeklyOffDayGamesTally,
@@ -284,73 +291,6 @@ async function getSkaterStats(gamesArr) {
         }
         return playerArray;
     }, []);
-
-    // for (let i = 0; i < Arr.length; i++) {
-    //     let num = Arr[i][0].Id;
-    //     let teamNum = Arr[i][0].teamId;
-    //     let url = `https://statsapi.web.nhl.com/api/v1/people/${num}/stats?stats=statsSingleSeason&season=20212022`;
-    //     try {
-    //         let res = await fetch(url);
-    //         res = await res.json();
-    //         let playerStats = res.stats[0].splits;
-    //         let results = [];
-    //         if (playerStats.length > 0) {
-    //             let gamesPlayed = playerStats[0].stat.games;
-    //             if (gamesPlayed > 0) {
-    //                 let playerGoals = playerStats[0].stat.goals;
-    //                 let playerAssists = playerStats[0].stat.assists;
-    //                 let playerPoints = playerStats[0].stat.points;
-    //                 let playerGameWinningGoals = playerStats[0].stat.gameWinningGoals;
-    //                 let pointsPerGame = roundPrecision((playerPoints / gamesPlayed), 3);
-    //                 let playerTOIperGame = playerStats[0].stat.timeOnIcePerGame;
-    //                 let playerPPGoals = playerStats[0].stat.powerPlayGoals;
-    //                 let playerPPP = playerStats[0].stat.powerPlayPoints;
-    //                 let playerPPTOIperGame = playerStats[0].stat.powerPlayTimeOnIcePerGame;
-    //                 let playerShortHandedGoals = playerStats[0].stat.shortHandedGoals;
-    //                 let playerShortHandedPoints = playerStats[0].stat.shortHandedPoints;
-    //                 let playerSHTOIperGame = playerStats[0].stat.shortHandedTimeOnIcePerGame;
-    //                 let playerHits = playerStats[0].stat.hits;
-    //                 let playerBlocks = playerStats[0].stat.blocked;
-    //                 let playerShots = playerStats[0].stat.shots;
-    //                 let playerShootingPct = playerStats[0].stat.shotPct;
-    //                 let playerfaceoffPct = playerStats[0].stat.faceOffPct;
-    //                 let playerPim = playerStats[0].stat.pim;
-    //                 let weeklyGamesTally = generateWeeklyGamesTally(gamesArr, teamNum);
-    //                 let weeklyOffDayGamesTally = generateWeeklyOffDayGamesTally(gamesArr, teamNum);
-    //                 //Generate the array to be appended to the table
-    //                 // weekly games and off day games are generated through function
-    //                 results.push(
-    //                     Arr[i][0].name,
-    //                     Arr[i][0].team,
-    //                     gamesPlayed,
-    //                     weeklyGamesTally,
-    //                     weeklyOffDayGamesTally,
-    //                     playerGoals,
-    //                     playerAssists,
-    //                     playerPoints,
-    //                     playerGameWinningGoals,
-    //                     pointsPerGame,
-    //                     playerTOIperGame,
-    //                     playerPPGoals,
-    //                     playerPPP,
-    //                     playerPPTOIperGame,
-    //                     playerShortHandedGoals,
-    //                     playerShortHandedPoints,
-    //                     playerSHTOIperGame,
-    //                     playerHits,
-    //                     playerBlocks,
-    //                     playerShots,
-    //                     playerShootingPct,
-    //                     playerfaceoffPct,
-    //                     playerPim
-    //                 );
-    //                 skatersStatsArr.push(results);
-    //             }
-    //         };
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
     return skatersStatsArr;
 }
 

@@ -297,7 +297,69 @@ async function getSkaterStats(gamesArr) {
 async function getGoalieStats(gamesArr) {
     let goalieStatsArr = [];
     let Arr = await generateGoaliesArr(gamesArr);
-    for (let i = 0; i < Arr.length; i++) {
+    const goalieInfoPromises = await Promise.all(Arr.map(async(goalie) => {
+        let num = goalie[0].Id;
+        let thisGoalieName = goalie[0].name;
+        let thisGoalieTeam = goalie[0].team;
+        let thisGoalieTeamID = goalie[0].teamId;
+        let url = `https://statsapi.web.nhl.com/api/v1/people/${num}/stats?stats=statsSingleSeason&season=20212022`;
+        let thisGoalieStats = await fetch(url);
+        let thisGoalieStatsJSON = await thisGoalieStats.json();
+        return {
+            stats: thisGoalieStatsJSON,
+            name: thisGoalieName,
+            team: thisGoalieTeam,
+            teamId: thisGoalieTeamID
+        };
+    }))
+
+    // Call the promise all to fetch all Goalie Stats in parallel
+    // Use .reduce to error catach any Goalies that don't fit have the requried stats 
+    const goalieInfoResponses = await Promise.all(goalieInfoPromises)
+    goalieStatsArr = goalieInfoResponses.reduce((goalieArray, singleGoalieJSON, goalieIndex) => {
+        //console.log(singleGoalieJSON);
+        let teamNum = singleGoalieJSON.teamId;
+        let goalieStats = singleGoalieJSON.stats.stats[0].splits;
+        let results = [];
+        if (goalieStats.length > 0) {
+            let gamesPlayed = goalieStats[0].stat.games;
+            let gamesStarted = goalieStats[0].stat.gamesStarted;
+            let goalieWins = goalieStats[0].stat.wins;
+            let goalieLosses = goalieStats[0].stat.losses;
+            let goalieShutouts = goalieStats[0].stat.shutouts;
+            let goalieShotsAgainst = goalieStats[0].stat.shotsAgainst
+            let goalieSaves = goalieStats[0].stat.saves;
+            let goalieSavePercentage = roundPrecision(goalieStats[0].stat.savePercentage, 3);
+            let goalieGoalsAgainst = goalieStats[0].stat.goalsAgainst;
+            let goalieGoalAgainstAverage = roundPrecision((goalieStats[0].stat.goalAgainstAverage), 3);
+            let weeklyGamestally = generateWeeklyGamesTally(gamesArr, teamNum);
+            let weeklyOffDayGamesTally = generateWeeklyOffDayGamesTally(gamesArr, teamNum);
+
+            //Generate the array to be appended to the table
+            // weekly games and off day games are generated through function
+            results.push(
+                singleGoalieJSON.name,
+                singleGoalieJSON.team,
+                weeklyGamestally,
+                weeklyOffDayGamesTally,
+                gamesPlayed,
+                gamesStarted,
+                goalieWins,
+                goalieLosses,
+                goalieShutouts,
+                goalieShotsAgainst,
+                goalieSaves,
+                goalieSavePercentage,
+                goalieGoalsAgainst,
+                goalieGoalAgainstAverage
+            );
+            goalieArray.push(results);
+            return goalieArray;
+        }
+        return goalieArray;
+    }, []);
+    return goalieStatsArr;
+    /* for (let i = 0; i < Arr.length; i++) {
         let num = Arr[i][0].Id;
         let teamNum = Arr[i][0].teamId;
         let url = `https://statsapi.web.nhl.com/api/v1/people/${num}/stats?stats=statsSingleSeason&season=20212022`;
@@ -344,7 +406,7 @@ async function getGoalieStats(gamesArr) {
             console.log(error);
         }
     }
-    return goalieStatsArr;
+    return goalieStatsArr; */
 };
 
 /* function getSkaterStats(Arr, tableId, isMobile) {

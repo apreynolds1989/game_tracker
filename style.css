@@ -30,21 +30,22 @@ a.nav-link:hover {
     box-shadow: 10px 10px 15px rgba(0, 0, 0, .5);
 }
 
-.quickPoints {
-    color: #f0ad4e;
-}
-
-.qpBorder {
+.btnBorder {
     border-right: 5px solid #df4759;
 }
 
-.highlight {
+.tableBtn {
     background-color: #00205B;
+    color: #f0ad4e;
     padding-left: 8px;
     padding-right: 8px;
     border-style: transparent;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, .5);
+}
+
+.tableHidden {
+    display: none;
 }
 
 .recHeader {
@@ -88,7 +89,7 @@ td {
 }
 
 @media only screen and (max-width: 768px) {
-    .qpBorder {
+    .btnBorder {
         border-right: 0px;
         padding-top: 3px;
         padding-bottom: 3px;

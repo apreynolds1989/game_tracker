@@ -1,6 +1,42 @@
 main();
 
 async function main() {
+    const skatersBtn = document.querySelector('.skatersBtn');
+    const goaliesBtn = document.querySelector('.goaliesBtn');
+    const scheduleBtn = document.querySelector('.scheduleBtn');
+    const skatersTbl = document.querySelector('.skatersTbl');
+    const skatersTblMobile = document.querySelector('.skatersTblMobile');
+    const goaliesTbl = document.querySelector('.goaliesTbl');
+    const goaliesTblMobile = document.querySelector('.goaliesTblMobile');
+    const scheduleTbl = document.querySelector('.scheduleTbl');
+    const scheduleTblMobile = document.querySelector('.scheduleTblMobile');
+
+    skatersBtn.addEventListener('click', () => {
+        if (!goaliesTbl.classList.contains('tableHidden')) goaliesTbl.classList.add('tableHidden');
+        if (!goaliesTblMobile.classList.contains('tableHidden')) goaliesTblMobile.classList.add('tableHidden');
+        if (!scheduleTbl.classList.contains('tableHidden')) scheduleTbl.classList.add('tableHidden');
+        if (!scheduleTblMobile.classList.contains('tableHidden')) scheduleTblMobile.classList.add('tableHidden');
+        if (skatersTbl.classList.contains('tableHidden')) skatersTbl.classList.remove('tableHidden');
+        if (skatersTblMobile.classList.contains('tableHidden')) skatersTblMobile.classList.remove('tableHidden');
+    });
+
+    goaliesBtn.addEventListener('click', () => {
+        if (!skatersTbl.classList.contains('tableHidden')) skatersTbl.classList.add('tableHidden');
+        if (!skatersTblMobile.classList.contains('tableHidden')) skatersTblMobile.classList.add('tableHidden');
+        if (!scheduleTbl.classList.contains('tableHidden')) scheduleTbl.classList.add('tableHidden');
+        if (!scheduleTblMobile.classList.contains('tableHidden')) scheduleTblMobile.classList.add('tableHidden');
+        if (goaliesTbl.classList.contains('tableHidden')) goaliesTbl.classList.remove('tableHidden');
+        if (goaliesTblMobile.classList.contains('tableHidden')) goaliesTblMobile.classList.remove('tableHidden');
+    });
+
+    scheduleBtn.addEventListener('click', () => {
+        if (!skatersTbl.classList.contains('tableHidden')) skatersTbl.classList.add('tableHidden');
+        if (!skatersTblMobile.classList.contains('tableHidden')) skatersTblMobile.classList.add('tableHidden');
+        if (!goaliesTbl.classList.contains('tableHidden')) goaliesTbl.classList.add('tableHidden');
+        if (!goaliesTblMobile.classList.contains('tableHidden')) goaliesTblMobile.classList.add('tableHidden');
+        if (scheduleTbl.classList.contains('tableHidden')) scheduleTbl.classList.remove('tableHidden');
+        if (scheduleTblMobile.classList.contains('tableHidden')) scheduleTblMobile.classList.remove('tableHidden');
+    });
 
     // Show spinner
     try {

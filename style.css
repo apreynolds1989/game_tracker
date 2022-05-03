@@ -77,6 +77,9 @@ td {
     #goaliesTableMobile {
         display: none;
     }
+    #scheduleTableMobile {
+        display: none;
+    }
 }
 
 @media only screen and (max-width: 992px) {
@@ -84,6 +87,9 @@ td {
         display: none;
     }
     #goaliesTable {
+        display: none;
+    }
+    #scheduleTable {
         display: none;
     }
 }

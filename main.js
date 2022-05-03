@@ -1,6 +1,23 @@
-main();
-
 async function main() {
+
+    generateTableBtns();
+
+    // Show spinner
+    try {
+        let weeklyGames = await getCurrentWeek();
+        generateSkaterTable(weeklyGames);
+        generateGoalieTable(weeklyGames);
+    } catch (err) {
+        console.log(err);
+    }
+    // Hide spinner
+}
+
+//Select all Table name buttons, select all tables by specific classes
+// add event listener to each button to await click
+//  When respective buttons are clicked hide other tables by adding .tableHidden to classList
+//    and remove .tableHidden from the clicked table type
+const generateTableBtns = () => {
     const skatersBtn = document.querySelector('.skatersBtn');
     const goaliesBtn = document.querySelector('.goaliesBtn');
     const scheduleBtn = document.querySelector('.scheduleBtn');
@@ -37,16 +54,6 @@ async function main() {
         if (scheduleTbl.classList.contains('tableHidden')) scheduleTbl.classList.remove('tableHidden');
         if (scheduleTblMobile.classList.contains('tableHidden')) scheduleTblMobile.classList.remove('tableHidden');
     });
-
-    // Show spinner
-    try {
-        let weeklyGames = await getCurrentWeek();
-        generateSkaterTable(weeklyGames);
-        generateGoalieTable(weeklyGames);
-    } catch (err) {
-        console.log(err);
-    }
-    // Hide spinner
 }
 
 async function generateSkaterTable(arr) {
@@ -515,3 +522,6 @@ recommendedPlayers.forEach(recommendedPlayersRowContent => {
     });
     recommendedPlayersTableBodyRef.append(recommendedPlayersTempRow);
 });
+
+//Call main function to run page
+main();

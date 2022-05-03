@@ -164,6 +164,7 @@ async function getCurrentWeek() {
             for (i = 0; i < dates.length; i++) {
                 weeklyGames.push(dates[i].games);
             };
+            console.log(weeklyGames);
             return weeklyGames;
         } catch (error) {
             console.log(error);
@@ -196,7 +197,7 @@ function generateWeeklyOffDayGamesTally(gamesArr, variable) {
     for (i = 0; i < gamesArr.length; i++) {
         let games = gamesArr[i];
         if (gamesArr.length % 2) {
-            if (i === 1 || i === 3 || i === 5) {
+            if (i === 0 || i === 2 || i === 4 || i === 6) {
                 for (j = 0; j < games.length; j++) {
                     let awayTeam = games[j].teams.away.team.id;
                     let homeTeam = games[j].teams.home.team.id;
@@ -206,7 +207,7 @@ function generateWeeklyOffDayGamesTally(gamesArr, variable) {
                 };
             };
         } else {
-            if (i === 0 || i === 2 || i === 4 || i === 6) {
+            if (i === 1 || i === 3 || i === 5) {
                 for (j = 0; j < games.length; j++) {
                     let awayTeam = games[j].teams.away.team.id;
                     let homeTeam = games[j].teams.home.team.id;

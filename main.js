@@ -1,6 +1,8 @@
 async function main() {
 
     generateTableBtns();
+
+    //Initialize Simple-DataTables
     let skatersDataTable = new simpleDatatables.DataTable("#skatersTable");
     let skatersDataTableMobile = new simpleDatatables.DataTable("#skatersTableMobile");
     let goaliesDataTable = new simpleDatatables.DataTable("#goaliesTable");
@@ -350,27 +352,27 @@ async function getSkaterStats(gamesArr) {
                     results.push(
                         singlePlayerJSON.name,
                         singlePlayerJSON.team,
-                        gamesPlayed,
-                        weeklyGamesTally,
-                        weeklyOffDayGamesTally,
-                        playerGoals,
-                        playerAssists,
-                        playerPoints,
-                        playerGameWinningGoals,
+                        gamesPlayed.toString(),
+                        weeklyGamesTally.toString(),
+                        weeklyOffDayGamesTally.toString(),
+                        playerGoals.toString(),
+                        playerAssists.toString(),
+                        playerPoints.toString(),
+                        playerGameWinningGoals.toString(),
                         pointsPerGame,
                         playerTOIperGame,
-                        playerPPGoals,
-                        playerPPP,
+                        playerPPGoals.toString(),
+                        playerPPP.toString(),
                         playerPPTOIperGame,
-                        playerShortHandedGoals,
-                        playerShortHandedPoints,
+                        playerShortHandedGoals.toString(),
+                        playerShortHandedPoints.toString(),
                         playerSHTOIperGame,
-                        playerHits,
-                        playerBlocks,
-                        playerShots,
-                        playerShootingPct,
-                        playerfaceoffPct,
-                        playerPim
+                        playerHits.toString(),
+                        playerBlocks.toString(),
+                        playerShots.toString(),
+                        playerShootingPct.toString(),
+                        playerfaceoffPct.toString(),
+                        playerPim.toString()
                     );
                     playerArray.push(results);
                     return playerArray;

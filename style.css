@@ -83,7 +83,13 @@ td {
 }
 
 @media only screen and (max-width: 992px) {
-    #skatersTable {
+    /* #skatersTable {
+        display: none;
+    } */
+    td:nth-child(3),
+    th:nth-child(3),
+    td:nth-child(n+9),
+    th:nth-child(n+9) {
         display: none;
     }
     #goaliesTable {

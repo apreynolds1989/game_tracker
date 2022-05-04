@@ -70,32 +70,11 @@ td {
     text-align: center;
 }
 
-@media only screen and (min-width: 992px) {
-    #skatersTableMobile {
-        display: none;
-    }
-    #goaliesTableMobile {
-        display: none;
-    }
-    #scheduleTableMobile {
-        display: none;
-    }
-}
-
 @media only screen and (max-width: 992px) {
-    /* #skatersTable {
-        display: none;
-    } */
     td:nth-child(3),
     th:nth-child(3),
     td:nth-child(n+9),
     th:nth-child(n+9) {
-        display: none;
-    }
-    #goaliesTable {
-        display: none;
-    }
-    #scheduleTable {
         display: none;
     }
 }

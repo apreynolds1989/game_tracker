@@ -4,20 +4,15 @@ async function main() {
 
     //Initialize Simple-DataTables
     let skatersDataTable = new simpleDatatables.DataTable("#skatersTable");
-    let skatersDataTableMobile = new simpleDatatables.DataTable("#skatersTableMobile");
     let goaliesDataTable = new simpleDatatables.DataTable("#goaliesTable");
-    let goaliessDataTableMobile = new simpleDatatables.DataTable("#goaliesTableMobile");
 
     // Show spinner
     try {
         let weeklyGames = await getCurrentWeek();
         let skaterTableContent = await getSkaterStats(weeklyGames);
-        console.log(skaterTableContent);
         let goalieTableContent = await getGoalieStats(weeklyGames);
         skatersDataTable.rows().add(skaterTableContent);
-        skatersDataTableMobile.rows().add(skaterTableContent);
         goaliesDataTable.rows().add(goalieTableContent);
-        goaliessDataTableMobile.rows().add(goalieTableContent);
         //generateSkaterTable(weeklyGames);
         //generateGoalieTable(weeklyGames);
     } catch (err) {
@@ -35,37 +30,25 @@ const generateTableBtns = () => {
     const goaliesBtn = document.querySelector('.goaliesBtn');
     const scheduleBtn = document.querySelector('.scheduleBtn');
     const skatersTbl = document.querySelector('.skatersTbl');
-    const skatersTblMobile = document.querySelector('.skatersTblMobile');
     const goaliesTbl = document.querySelector('.goaliesTbl');
-    const goaliesTblMobile = document.querySelector('.goaliesTblMobile');
     const scheduleTbl = document.querySelector('.scheduleTbl');
-    const scheduleTblMobile = document.querySelector('.scheduleTblMobile');
 
     skatersBtn.addEventListener('click', () => {
         if (!goaliesTbl.classList.contains('tableHidden')) goaliesTbl.classList.add('tableHidden');
-        if (!goaliesTblMobile.classList.contains('tableHidden')) goaliesTblMobile.classList.add('tableHidden');
         if (!scheduleTbl.classList.contains('tableHidden')) scheduleTbl.classList.add('tableHidden');
-        if (!scheduleTblMobile.classList.contains('tableHidden')) scheduleTblMobile.classList.add('tableHidden');
         if (skatersTbl.classList.contains('tableHidden')) skatersTbl.classList.remove('tableHidden');
-        if (skatersTblMobile.classList.contains('tableHidden')) skatersTblMobile.classList.remove('tableHidden');
     });
 
     goaliesBtn.addEventListener('click', () => {
         if (!skatersTbl.classList.contains('tableHidden')) skatersTbl.classList.add('tableHidden');
-        if (!skatersTblMobile.classList.contains('tableHidden')) skatersTblMobile.classList.add('tableHidden');
         if (!scheduleTbl.classList.contains('tableHidden')) scheduleTbl.classList.add('tableHidden');
-        if (!scheduleTblMobile.classList.contains('tableHidden')) scheduleTblMobile.classList.add('tableHidden');
         if (goaliesTbl.classList.contains('tableHidden')) goaliesTbl.classList.remove('tableHidden');
-        if (goaliesTblMobile.classList.contains('tableHidden')) goaliesTblMobile.classList.remove('tableHidden');
     });
 
     scheduleBtn.addEventListener('click', () => {
         if (!skatersTbl.classList.contains('tableHidden')) skatersTbl.classList.add('tableHidden');
-        if (!skatersTblMobile.classList.contains('tableHidden')) skatersTblMobile.classList.add('tableHidden');
         if (!goaliesTbl.classList.contains('tableHidden')) goaliesTbl.classList.add('tableHidden');
-        if (!goaliesTblMobile.classList.contains('tableHidden')) goaliesTblMobile.classList.add('tableHidden');
         if (scheduleTbl.classList.contains('tableHidden')) scheduleTbl.classList.remove('tableHidden');
-        if (scheduleTblMobile.classList.contains('tableHidden')) scheduleTblMobile.classList.remove('tableHidden');
     });
 }
 
@@ -434,17 +417,17 @@ async function getGoalieStats(gamesArr) {
                 results.push(
                     singleGoalieJSON.name,
                     singleGoalieJSON.team,
-                    weeklyGamestally,
-                    weeklyOffDayGamesTally,
-                    gamesPlayed,
-                    gamesStarted,
-                    goalieWins,
-                    goalieLosses,
-                    goalieShutouts,
-                    goalieShotsAgainst,
-                    goalieSaves,
+                    gamesPlayed.toString(),
+                    weeklyGamestally.toString(),
+                    weeklyOffDayGamesTally.toString(),
+                    gamesStarted.toString(),
+                    goalieWins.toString(),
+                    goalieLosses.toString(),
+                    goalieShutouts.toString(),
+                    goalieShotsAgainst.toString(),
+                    goalieSaves.toString(),
                     goalieSavePercentage,
-                    goalieGoalsAgainst,
+                    goalieGoalsAgainst.toString(),
                     goalieGoalAgainstAverage
                 );
                 goalieArray.push(results);
@@ -488,7 +471,7 @@ function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
     skatersTableBodyRef.append(skatersTableTempRow);
 } */
 
-function populateTable(Arr, tableId, isMobile) {
+function populateTable(Arr, tableId) {
     //Reference Table
     const tableBodyRef = document.getElementById(tableId);
 
@@ -500,10 +483,6 @@ function populateTable(Arr, tableId, isMobile) {
         //Now iterate through columns
         for (let col_index = 0; col_index < tableRowContent.length; col_index++) {
             const tableCellContent = tableRowContent[col_index];
-
-            if (isMobile == true && col_index > 7) {
-                continue;
-            };
             const tableTempCell = document.createElement('td'); //temporary cell
             tableTempCell.innerHTML = tableCellContent;
             tableTempRow.append(tableTempCell);

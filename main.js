@@ -1,12 +1,23 @@
 async function main() {
 
     generateTableBtns();
+    let skatersDataTable = new simpleDatatables.DataTable("#skatersTable");
+    let skatersDataTableMobile = new simpleDatatables.DataTable("#skatersTableMobile");
+    let goaliesDataTable = new simpleDatatables.DataTable("#goaliesTable");
+    let goaliessDataTableMobile = new simpleDatatables.DataTable("#goaliesTableMobile");
 
     // Show spinner
     try {
         let weeklyGames = await getCurrentWeek();
-        generateSkaterTable(weeklyGames);
-        generateGoalieTable(weeklyGames);
+        let skaterTableContent = await getSkaterStats(weeklyGames);
+        console.log(skaterTableContent);
+        let goalieTableContent = await getGoalieStats(weeklyGames);
+        skatersDataTable.rows().add(skaterTableContent);
+        skatersDataTableMobile.rows().add(skaterTableContent);
+        goaliesDataTable.rows().add(goalieTableContent);
+        goaliessDataTableMobile.rows().add(goalieTableContent);
+        //generateSkaterTable(weeklyGames);
+        //generateGoalieTable(weeklyGames);
     } catch (err) {
         console.log(err);
     }
@@ -75,7 +86,7 @@ async function generateGoalieTable(arr) {
 };
 
 //Implement JSTables Library
-function generateSkatersDataTables(Arr) {
+/* function generateSkatersDataTables(Arr) {
     populateTable(Arr, "skatersTableData", false);
     populateTable(Arr, "skatersTableDataMobile", true);
     let skaterDataTable = new JSTable("#skatersTable", {
@@ -115,7 +126,7 @@ function generateGoaliesDataTables(Arr) {
             searchable: true,
         }, ]
     });
-}
+} */
 
 //Function to call NHL API and return a list of all NHL teams
 async function getTeams() {

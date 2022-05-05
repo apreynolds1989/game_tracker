@@ -4,7 +4,9 @@ async function main() {
 
     //Initialize Simple-DataTables
     let skatersDataTable = new simpleDatatables.DataTable("#skatersTable");
+    let skaterCols = skatersDataTable.columns();
     let goaliesDataTable = new simpleDatatables.DataTable("#goaliesTable");
+    let goalieCols = goaliesDataTable.columns();
 
     // Show spinner
     try {
@@ -12,7 +14,9 @@ async function main() {
         let skaterTableContent = await getSkaterStats(weeklyGames);
         let goalieTableContent = await getGoalieStats(weeklyGames);
         skatersDataTable.rows().add(skaterTableContent);
+        skaterCols.sort(7, 'desc');
         goaliesDataTable.rows().add(goalieTableContent);
+        goalieCols.sort(6, 'desc');
         //generateSkaterTable(weeklyGames);
         //generateGoalieTable(weeklyGames);
     } catch (err) {

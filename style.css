@@ -71,10 +71,27 @@ td {
 }
 
 @media only screen and (max-width: 992px) {
-    td:nth-child(3),
-    th:nth-child(3),
-    td:nth-child(n+9),
-    th:nth-child(n+9) {
+    tbody#skatersTableData td:nth-child(3),
+    thead.skatersTblHead th:nth-child(3),
+    tbody#skatersTableData td:nth-child(n+9),
+    thead.skatersTblHead th:nth-child(n+9),
+    tbody#goaliesTableData td:nth-child(3),
+    thead.goaliesTblHead th:nth-child(3),
+    tbody#goaliesTableData td:nth-child(n+9),
+    thead.goaliesTblHead th:nth-child(n+9) {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 582px) {
+    tbody#skatersTableData td:nth-child(6),
+    thead.skatersTblHead th:nth-child(6),
+    tbody#skatersTableData td:nth-child(7),
+    thead.skatersTblHead th:nth-child(7),
+    tbody#goaliesTableData td:nth-child(6),
+    thead.goaliesTblHead th:nth-child(6),
+    tbody#goaliesTableData td:nth-child(8),
+    thead.goaliesTblHead th:nth-child(8) {
         display: none;
     }
 }

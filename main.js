@@ -74,49 +74,6 @@ async function generateGoalieTable(arr) {
     }
 };
 
-//Implement JSTables Library
-/* function generateSkatersDataTables(Arr) {
-    populateTable(Arr, "skatersTableData", false);
-    populateTable(Arr, "skatersTableDataMobile", true);
-    let skaterDataTable = new JSTable("#skatersTable", {
-        columns: [{
-            select: 7,
-            sortable: true,
-            sort: "desc",
-            searchable: true,
-        }, ]
-    });
-    let skaterDataTableMobile = new JSTable("#skatersTableMobile", {
-        columns: [{
-            select: 7,
-            sortable: true,
-            sort: "desc",
-            searchable: true,
-        }, ]
-    });
-}
-
-function generateGoaliesDataTables(Arr) {
-    populateTable(Arr, "goaliesTableData", false);
-    populateTable(Arr, "goaliesTableDataMobile", true);
-    let goaliesDataTable = new JSTable("#goaliesTable", {
-        columns: [{
-            select: 6,
-            sortable: true,
-            sort: "desc",
-            searchable: true,
-        }, ]
-    });
-    let goaliesDataTableMobile = new JSTable("#goaliesTableMobile", {
-        columns: [{
-            select: 6,
-            sortable: true,
-            sort: "desc",
-            searchable: true,
-        }, ]
-    });
-} */
-
 //Function to call NHL API and return a list of all NHL teams
 async function getTeams() {
     try {
@@ -450,30 +407,6 @@ async function getGoalieStats(gamesArr) {
 function roundPrecision(number, n_integers) {
     return number != null ? number.toPrecision(n_integers) : 0;
 }
-
-//Function to empty the table, to be called in pagination buttons allowing new table to be rendered
-/* function emptyTable(tableId) {
-    const skatersTableBodyRef = document.getElementById(tableId);
-    skatersTableBodyRef.innerHTML = "";
-} */
-
-/* //Function to render a single row and append it to the referenced table. 
-// Allows logic to remain async
-function renderSingleRow(skatersTableRowContent, tableId, isMobile) {
-    const skatersTableBodyRef = document.getElementById(tableId);
-    const skatersTableTempRow = document.createElement('tr');
-
-    for (let col_index = 0; col_index < skatersTableRowContent.length; col_index++) {
-        const skatersTableCellContent = skatersTableRowContent[col_index];
-        const skatersTableTempCell = document.createElement('td');
-        skatersTableTempCell.innerHTML = skatersTableCellContent;
-        if (isMobile == true && col_index > 4) {
-            continue;
-        };
-        skatersTableTempRow.append(skatersTableTempCell);
-    };
-    skatersTableBodyRef.append(skatersTableTempRow);
-} */
 
 function populateTable(Arr, tableId) {
     //Reference Table
